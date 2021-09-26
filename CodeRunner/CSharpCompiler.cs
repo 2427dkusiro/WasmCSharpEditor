@@ -11,7 +11,8 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using System.Net.Http;
 using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+
+using CodeRunner.DllLoader;
 using CodeRunner.CodeInjection;
 
 namespace CodeRunner
@@ -22,9 +23,9 @@ namespace CodeRunner
         private IEnumerable<MetadataReference> metadataReferences;
         private SyntaxTree injectCode;
 
-        public CSharpCompiler(HttpClient httpClient)
+        public CSharpCompiler(HttpClient httpClient, string indexPath)
         {
-            networkAssemblyLoader = new NetworkAssemblyLoader(httpClient);
+            networkAssemblyLoader = new NetworkAssemblyLoader(httpClient, indexPath);
         }
 
         public async Task<CompileResult> Compile(string code)
@@ -43,7 +44,7 @@ namespace CodeRunner
             }
 
             var compileOption = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            var compile = CSharpCompilation.Create("Hoge", new[] { syntaxTree, injectCode }, metadataReferences, compileOption);
+            var compile = CSharpCompilation.Create("__HogeAssembly", new[] { syntaxTree, injectCode }, metadataReferences, compileOption);
 
             Microsoft.CodeAnalysis.Emit.EmitResult emitResult = default;
             MemoryStream memoryStream = new MemoryStream();
@@ -61,11 +62,7 @@ namespace CodeRunner
                         memoryStream.Dispose();
                         memoryStream = new MemoryStream();
                         await Task.Delay(250);
-                        if (i == 0)
-                        {
-                            Debug.WriteLine($"[Info]既知の問題「一回目のコンパイルが失敗する」が発生しました。再試行します...");
-                        }
-                        Debug.WriteLine($"コンパイラに内部的な問題が生じました、再試行します...{i.ToString()}回目");
+                        Debug.WriteLine($"コンパイラに内部的な問題が生じました、再試行します...{(i + 1).ToString()}回目");
                         continue;
                     }
                 }
@@ -79,7 +76,7 @@ namespace CodeRunner
                 }
                 else
                 {
-                    foreach(var d in emitResult.Diagnostics)
+                    foreach (var d in emitResult.Diagnostics)
                     {
                         Console.WriteLine(d.ToString());
                     }

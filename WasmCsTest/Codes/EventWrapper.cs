@@ -7,6 +7,16 @@ using System.Threading.Tasks;
 
 namespace WasmCsTest.Codes
 {
+    /// <summary>
+    /// JavascriptのイベントからC#のイベントへの変換を支援する機能を提供します。
+    /// </summary>
+    /// <remarks>
+    /// このクラスは以下のように機能します。
+    /// 1. javascriptにguidを文字列として渡します。guidは、どのjavascriptのイベントを購読するかを区別するのに使います。
+    /// 2. イベントハンドラを、guidとともに <see cref="AddHandler(Guid, EventHandler)"/> に渡してイベントを購読します。
+    /// 3. javascriptはイベントを受け取ると、<see cref="RaiseOnChangeEventFromJs(string)"/> をguidを引数として呼び出します。
+    /// 4. このクラスは、guidに関連付けられたすべてのイベントハンドラを実行します。 
+    /// </remarks>
     public class EventWrapper
     {
         private static readonly Dictionary<Guid, List<EventHandler>> dictionary = new();

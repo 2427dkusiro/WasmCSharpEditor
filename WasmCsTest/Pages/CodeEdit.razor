@@ -11,18 +11,40 @@
 
 @page "/CodeEdit"
 
-<WasmCsTest.Components.CodeEditor @bind-UserCode="userCode" @bind-UserCode:event="OnChanged" />
+<WasmCsTest.Components.CodeEditor @bind-UserCode="userCode" @bind-UserCode:event="OnChanged" CodeEditorContext="CodeEditorContext" />
 
-<button class="btn btn-primary" style="width:100%;" @onclick="OnRunButtonClicked">実行</button>
+@if (!CodeEditorContext.IsCodeCompiling)
+{
+    <button class="btn btn-primary" style="width:100%;" @onclick="OnRunButtonClicked">実行</button>
+}
+else
+{
+    <button class="btn btn-secondary" style="width:100%;">中断</button>
+}
+
+<hr />
+
+<WasmCsTest.Components.CompileResult CodeEditorContext="CodeEditorContext" />
+
+<WasmCsTest.Components.VirtualConsole CodeEditorContext="CodeEditorContext" />
 
 @code{
     private string userCode;
 
+    private CodeEditorContext CodeEditorContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        CodeEditorContext = new CodeEditorContext(Http);
+    }
+
     private async Task OnRunButtonClicked()
     {
-        /*
-        var code = await codeMirrorWrapper.GetCodeText();
-        var compileResult = await cSharpCompiler.Compile(code);
-        */
+        var result = await CodeEditorContext.Compile(userCode);
+        this.StateHasChanged();
+        if (result.IsSuccessed)
+        {
+            await CodeEditorContext.RunCode(result);
+        }
     }
 }

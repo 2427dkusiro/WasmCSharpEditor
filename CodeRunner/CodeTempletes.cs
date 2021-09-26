@@ -18,7 +18,8 @@ namespace CodeRunner
 }";
 
         public static readonly string TempleteCode =
-@"class Program
+@"using System;
+class Program
 {
     static void Main()
     {

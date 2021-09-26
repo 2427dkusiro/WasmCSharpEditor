@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WasmCsTest", "WasmCsTest\WasmCsTest.csproj", "{3E041BCB-C67F-4435-B05F-58CB79836154}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeRunner", "CodeRunner\CodeRunner.csproj", "{7AF21BC3-2D6D-4C15-9480-947E7A0C1082}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeRunner", "CodeRunner\CodeRunner.csproj", "{7AF21BC3-2D6D-4C15-9480-947E7A0C1082}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RuntimeIndexCreater", "RuntimeIndexCreater\RuntimeIndexCreater.csproj", "{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7AF21BC3-2D6D-4C15-9480-947E7A0C1082}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7AF21BC3-2D6D-4C15-9480-947E7A0C1082}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7AF21BC3-2D6D-4C15-9480-947E7A0C1082}.Release|Any CPU.Build.0 = Release|Any CPU
+		{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

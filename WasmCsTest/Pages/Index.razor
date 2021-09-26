@@ -28,12 +28,12 @@ C#をブラウザ上で実行する実験的プロジェクトです。C#コン�
 
 
 @code{
-    private CSharpCompiler cSharpCompiler;
+    private WasmCsTest.Codes.CodeEditorContext codeEditorContext;
     private string field1;
 
     protected override async Task OnInitializedAsync()
     {
-        cSharpCompiler = new CSharpCompiler(Http);
+        codeEditorContext = new Codes.CodeEditorContext(Http);
     }
 
     private void SetSecondFromIL()
@@ -57,7 +57,6 @@ C#をブラウザ上で実行する実験的プロジェクトです。C#コン�
 
     private async Task SetSecondFromCSharp()
     {
-        var compileResult = await cSharpCompiler.Compile(CodeTempletes.GetNowTimeSampleCode);
-        field1 = AssemblyExecuter.Execute<string>(compileResult);
+        
     }
 }

@@ -1,0 +1,32 @@
+﻿<style>
+    #virtualConsole {
+        width: 100%;
+        background-color: black;
+        color: white;
+        font-family: Consolas, Monaco, 'Courier New', Courier, monospace !important;
+    }
+</style>
+
+<h4>仮想コンソール</h4>
+
+<div>
+    <textarea id="virtualConsole" @bind="text" rows="8" />
+</div>
+
+@code {
+    private string text;
+
+    [Parameter]
+    public WasmCsTest.Codes.CodeEditorContext CodeEditorContext { get; set; }
+
+    private System.IO.StreamReader streamReader;
+    protected override async Task OnInitializedAsync()
+    {
+        VirtualConsoleWriter virtualConsoleOut = new VirtualConsoleWriter((string str) => text += str);
+        VirtualConsoleWriter virtualConsoleError = new VirtualConsoleWriter((string str) => text += str);
+        streamReader = new System.IO.StreamReader(new System.IO.MemoryStream());
+        CodeEditorContext.StdOut = virtualConsoleOut;
+        CodeEditorContext.StdError = virtualConsoleError;
+        CodeEditorContext.StdIn = streamReader;
+    }
+}

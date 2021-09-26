@@ -11,10 +11,12 @@
     .CodeMirror {
         font-family: Consolas, Monaco, 'Courier New', Courier, monospace !important;
         font-size: @codeEditFontSizeString;
+        width: 100%;
     }
-    #CodeEditor{
+    #CodeEditor {
         font-family: Consolas, Monaco, 'Courier New', Courier, monospace !important;
         font-size: @codeEditFontSizeString;
+        width: 100%;
     }
 </style>
 
@@ -22,7 +24,7 @@
 
 <!--下のDiv要素がないとコードエディタが盛大にバグります(ページ遷移してもついてくる)-->
 <div>
-    <textarea @bind="UserCode" id="CodeEditor" spellcheck="false" style="width:100%"></textarea>
+    <textarea @bind="UserCode" id="CodeEditor" spellcheck="false"></textarea>
 </div>
 
 <div>
@@ -37,8 +39,10 @@
 </div>
 
 @code{
-    private CSharpCompiler cSharpCompiler;
     private CodeMirrorWrapper codeMirrorWrapper;
+
+    [Parameter]
+    public CodeEditorContext CodeEditorContext { get; set; }
 
     [Parameter]
     public string UserCode { get; set; }
@@ -56,7 +60,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        cSharpCompiler = new CSharpCompiler(Http);
         UserCode = CodeTempletes.TempleteCode;
 
         codeMirrorWrapper = await CodeMirrorWrapper.CreateInstanceAsync(JS);
@@ -80,7 +83,7 @@
         //JSからイベントが発生した場合自動更新されない
         this.StateHasChanged();
 
-        await OnChanged.InvokeAsync();
+        await OnChanged.InvokeAsync(UserCode);
     }
 
     private void OnUserCodeLineChanged()

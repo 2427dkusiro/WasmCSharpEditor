@@ -1,0 +1,27 @@
+﻿<h4>コンパイル結果</h4>
+
+@if (CodeEditorContext.CompileResult is null)
+{
+    <p>コンパイルは実行されていません(この表示はリリース環境では消えるかも)</p>
+}
+else if (CodeEditorContext.CompileResult.IsSuccessed)
+{
+    <span class="text-success" style="font-size:16px">✔コンパイル成功</span>
+    <span>@CodeEditorContext.CompileTime</span>
+}
+else
+{
+    <span class="text-danger" style="font-size:16px">❌コンパイル失敗</span>
+    <span>@CodeEditorContext.CompileTime</span>
+    <ul>
+        @foreach (var d in CodeEditorContext.CompileResult.Diagnostics)
+        {
+            <li>@d.ToString()</li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public WasmCsTest.Codes.CodeEditorContext CodeEditorContext { get; set; }
+}
