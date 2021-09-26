@@ -1,0 +1,63 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+@using System.Reflection;
+@using System.Reflection.Emit;
+@using static System.Reflection.Emit.OpCodes;
+
+@using CodeRunner;
+
+@inject HttpClient Http;
+
+@page "/"
+
+<h1>Hello, C# world!</h1>
+
+<h2>このアプリについて</h2>
+C#をブラウザ上で実行する実験的プロジェクトです。C#コンパイラと実行環境がWebブラウザ上で動作します。
+
+<hr />
+
+<h3>まず試す</h3>
+<p>下のボタンを押すことで、ILやC#が実際に動的実行され、現在の時刻が表示されます。</p>
+
+<button @onclick="SetSecondFromIL">現在の時刻を表示(IL経由)</button>
+<button @onclick="SetSecondFromCSharp">現在の時刻を表示(C#経由)</button>
+
+<h2>@field1</h2>
+
+
+@code{
+    private CSharpCompiler cSharpCompiler;
+    private string field1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cSharpCompiler = new CSharpCompiler(Http);
+    }
+
+    private void SetSecondFromIL()
+    {
+        var assemblyBuilder = AssemblyBuilder.DefineDynamicAssembly(new AssemblyName("Hoge"), AssemblyBuilderAccess.Run);
+        var moduleBuilder = assemblyBuilder.DefineDynamicModule("Hoge");
+
+        var typeBuilder = moduleBuilder.DefineType("Fuga", TypeAttributes.Public);
+        var function = typeBuilder.DefineMethod("Piyo", MethodAttributes.Public | MethodAttributes.Static, typeof(string), null);
+        var ilGenerator = function.GetILGenerator();
+
+        ilGenerator.DeclareLocal(typeof(DateTime));
+        ilGenerator.Emit(Call, typeof(DateTime).GetMethod("get_Now"));
+        ilGenerator.Emit(Stloc_0);
+        ilGenerator.Emit(Ldloca_S, 0);
+        ilGenerator.Emit(Call, typeof(DateTime).GetMethod(nameof(DateTime.ToString), Array.Empty<Type>()));
+        ilGenerator.Emit(Ret);
+
+        field1 = (string)typeBuilder.CreateType().GetMethod("Piyo").Invoke(null, null);
+    }
+
+    private async Task SetSecondFromCSharp()
+    {
+        var compileResult = await cSharpCompiler.Compile(CodeTempletes.GetNowTimeSampleCode);
+        field1 = AssemblyExecuter.Execute<string>(compileResult);
+    }
+}

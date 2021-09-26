@@ -1,0 +1,90 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+
+@using CodeRunner;
+@using Codes;
+@inject HttpClient Http;
+@inject IJSRuntime JS;
+
+<style>
+    .CodeMirror {
+        font-family: Consolas, Monaco, 'Courier New', Courier, monospace !important;
+        font-size: @codeEditFontSizeString;
+    }
+    #CodeEditor{
+        font-family: Consolas, Monaco, 'Courier New', Courier, monospace !important;
+        font-size: @codeEditFontSizeString;
+    }
+</style>
+
+<h3>コードエディタ</h3>
+
+<!--下のDiv要素がないとコードエディタが盛大にバグります(ページ遷移してもついてくる)-->
+<div>
+    <textarea @bind="UserCode" id="CodeEditor" spellcheck="false" style="width:100%"></textarea>
+</div>
+
+<div>
+    <label>文字サイズ</label>
+    <input type="number" @bind="CodeEditFontSize" style="width:75px" />
+    <label>pt</label>
+</div>
+
+<div>
+    <span>行数:@userCodeLineCount</span>
+    <span>変更回数:@changedEventRisedCount</span>
+</div>
+
+@code{
+    private CSharpCompiler cSharpCompiler;
+    private CodeMirrorWrapper codeMirrorWrapper;
+
+    [Parameter]
+    public string UserCode { get; set; }
+
+    [Parameter]
+    public int CodeEditFontSize { get; set; } = 12;
+
+    [Parameter]
+    public EventCallback<string> OnChanged { get; set; }
+
+    private string codeEditFontSizeString { get => $"{CodeEditFontSize.ToString()}pt"; }
+
+    private int userCodeLineCount;
+    private int changedEventRisedCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cSharpCompiler = new CSharpCompiler(Http);
+        UserCode = CodeTempletes.TempleteCode;
+
+        codeMirrorWrapper = await CodeMirrorWrapper.CreateInstanceAsync(JS);
+        await codeMirrorWrapper.SetToTextArea("CodeEditor");
+        codeMirrorWrapper.OnChange += OnUserCodeChanged;
+        await OnUserCodeChanged();
+    }
+
+    private async void OnUserCodeChanged(object sender, EventArgs e) => await OnUserCodeChanged();
+    private async Task OnUserCodeChanged()
+    {
+        UserCode = await codeMirrorWrapper.GetCodeText();
+        var line = UserCode.Count(c => c == '\n') + 1;
+        if (userCodeLineCount != line)
+        {
+            userCodeLineCount = line;
+            OnUserCodeLineChanged();
+        }
+        changedEventRisedCount++;
+
+        //JSからイベントが発生した場合自動更新されない
+        this.StateHasChanged();
+
+        await OnChanged.InvokeAsync();
+    }
+
+    private void OnUserCodeLineChanged()
+    {
+
+    }
+}

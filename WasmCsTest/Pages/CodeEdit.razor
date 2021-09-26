@@ -1,0 +1,28 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+
+@using CodeRunner;
+@using Codes;
+@using Components;
+
+@inject HttpClient Http;
+@inject IJSRuntime JS;
+
+@page "/CodeEdit"
+
+<WasmCsTest.Components.CodeEditor @bind-UserCode="userCode" @bind-UserCode:event="OnChanged" />
+
+<button class="btn btn-primary" style="width:100%;" @onclick="OnRunButtonClicked">実行</button>
+
+@code{
+    private string userCode;
+
+    private async Task OnRunButtonClicked()
+    {
+        /*
+        var code = await codeMirrorWrapper.GetCodeText();
+        var compileResult = await cSharpCompiler.Compile(code);
+        */
+    }
+}
