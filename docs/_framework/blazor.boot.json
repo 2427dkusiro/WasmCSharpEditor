@@ -189,8 +189,8 @@
       "Microsoft.JSInterop.dll": "sha256-tDvn5GW+7NGvLe6n9\/tTh669tukuSpdtM4Oxhjs9GNY=",
       "Microsoft.JSInterop.WebAssembly.dll": "sha256-TZF2KGZRSev\/gMKjN7GoplW2xZPrK+yI4lECdonDwC4=",
       "System.IO.Pipelines.dll": "sha256-3ET+mpR7F058YRj9YaLHOVXBqOW6iUxtIpeiKPYw4PA=",
-      "CodeRunner.dll": "sha256-X7xdLMSUlKpu\/Gpo\/wrx\/SwXH74szfXKpaYLDleHjt4=",
-      "WasmCsTest.dll": "sha256-L5Ed2kXg2wUEeLpzPJvGYsfarCrxQJErdG4U0UE9Dgw="
+      "CodeRunner.dll": "sha256-1med3JVn8H8lpq6\/12wnkK4jkMmULZmWbRYKYroLTWo=",
+      "WasmCsTest.dll": "sha256-16oB+JzZpt5P1KMrjgDvefFkrv7uLB5wwj1tx1yuo1Y="
     },
     "lazyAssembly": null,
     "pdb": null,
