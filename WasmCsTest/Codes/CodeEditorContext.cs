@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using System.Reflection;
 using System.Diagnostics;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace WasmCsTest.Codes
 {
@@ -21,6 +22,66 @@ namespace WasmCsTest.Codes
         {
             cSharpCompiler = new CSharpCompiler(httpClient, indexPath);
         }
+
+        public void TryInitializing()
+        {
+            if (!isInitialized)
+            {
+                Initialize();
+            }
+        }
+
+        private async Task Initialize()
+        {
+            lock (isInitializingSync)
+            {
+                if (isInitializing || isInitialized)
+                {
+                    return;
+                }
+                isInitializing = true;
+            }
+
+            await Task.Run(async () =>
+            {
+                await cSharpCompiler.Compile(CodeTempletes.GetVersionCode);
+                lock (isInitializingSync)
+                {
+                    isInitializing = false;
+                    isInitialized = true;
+                    Console.WriteLine("バックグラウンド初期化完了");
+                }
+            });
+        }
+
+        private async Task EnsureInitialized()
+        {
+            if (isInitialized)
+            {
+                return;
+            }
+
+            bool b;
+            lock (isInitializingSync)
+            {
+                b = isInitializing;
+            }
+
+            if (isInitializing)
+            {
+                while (isInitializing && !isInitialized)
+                {
+                    await Task.Delay(50);
+                }
+                return;
+            }
+            await Initialize();
+        }
+
+        private readonly object isInitializingSync = new();
+        private static bool isInitializing;
+
+        private static bool isInitialized;
 
         private readonly object isCodeRunningSync = new object();
         public bool IsCodeCompiling { get; private set; }
@@ -43,6 +104,7 @@ namespace WasmCsTest.Codes
                 }
             }
             stopwatch.Restart();
+            await EnsureInitialized();
             var result = await Task.Run(async () => await cSharpCompiler.Compile(code));
             CompileResult = result;
             stopwatch.Stop();

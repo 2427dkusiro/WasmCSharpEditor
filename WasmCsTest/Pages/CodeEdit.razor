@@ -38,6 +38,11 @@ else
         CodeEditorContext = new CodeEditorContext(Http);
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // CodeEditorContext.TryInitializing();
+    }
+
     private async Task OnRunButtonClicked()
     {
         var result = await CodeEditorContext.Compile(userCode);

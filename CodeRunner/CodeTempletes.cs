@@ -9,11 +9,12 @@ namespace CodeRunner
     public static class CodeTempletes
     {
         public static readonly string GetNowTimeSampleCode =
-@"public class Fuga
+@"using System;
+class Program
 {
-    public static string Piyo()
+    static void Main()
     {
-        return System.DateTime.Now.ToString();
+        Console.WriteLine(DateTime.Now);
     }
 }";
 
@@ -24,6 +25,16 @@ class Program
     static void Main()
     {
         // Write your Code here
+    }
+}";
+
+        public static readonly string GetVersionCode =
+@"using System;
+class Program
+{
+    static void Main()
+    {
+        #error version
     }
 }";
     }

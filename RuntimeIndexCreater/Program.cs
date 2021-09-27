@@ -46,7 +46,6 @@ namespace RuntimeIndexCreater
                     dllLoadInfos.Add(new CodeRunner.DllLoader.DllLoadInfo()
                     {
                         Name = Path.GetFileName(file),
-                        Hash = str,
                     });
                 }
             }
@@ -61,7 +60,7 @@ namespace RuntimeIndexCreater
             {
                 streamWriter.Write(json);
             }
-            Console.WriteLine("Result was written to" + output);
+            Console.WriteLine("Result was written to " + output);
         }
     }
 }
