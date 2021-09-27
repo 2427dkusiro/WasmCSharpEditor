@@ -16,7 +16,5 @@ namespace CodeRunner.DllLoader
     public class DllLoadInfo
     {
         public string Name { get; set; }
-
-        public string Hash { get; set; }
     }
 }

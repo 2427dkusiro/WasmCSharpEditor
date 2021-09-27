@@ -20,8 +20,8 @@ namespace CodeRunner
     public class CSharpCompiler
     {
         private readonly NetworkAssemblyLoader networkAssemblyLoader;
-        private IEnumerable<MetadataReference> metadataReferences;
-        private SyntaxTree injectCode;
+        private static IEnumerable<MetadataReference> metadataReferences;
+        private static SyntaxTree injectCode;
 
         public CSharpCompiler(HttpClient httpClient, string indexPath)
         {
@@ -31,11 +31,11 @@ namespace CodeRunner
         public async Task<CompileResult> Compile(string code)
         {
             var parseOption = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp9);
-            var syntaxTree = CSharpSyntaxTree.ParseText(code, parseOption);
+            var syntaxTree = await Task.Run(() => CSharpSyntaxTree.ParseText(code, parseOption));
 
             if (injectCode is null)
             {
-                injectCode = CSharpSyntaxTree.ParseText(InjectCode.Code);
+                injectCode = await Task.Run(() => CSharpSyntaxTree.ParseText(InjectCode.Code));
             }
 
             if (metadataReferences is null)
@@ -44,7 +44,7 @@ namespace CodeRunner
             }
 
             var compileOption = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
-            var compile = CSharpCompilation.Create("__HogeAssembly", new[] { syntaxTree, injectCode }, metadataReferences, compileOption);
+            var compile = await Task.Run(() => CSharpCompilation.Create("__HogeAssembly", new[] { syntaxTree, injectCode }, metadataReferences, compileOption));
 
             Microsoft.CodeAnalysis.Emit.EmitResult emitResult = default;
             MemoryStream memoryStream = new MemoryStream();

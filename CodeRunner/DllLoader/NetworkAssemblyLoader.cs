@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,22 +27,15 @@ namespace CodeRunner.DllLoader
 
         public async Task<IEnumerable<MetadataReference>> LoadAsync()
         {
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            List<MetadataReference> metadataReferences = new List<MetadataReference>();
-
             var info = await httpClient.GetFromJsonAsync<LoadInfo>(indexPath);
             var str = LoadInfo.DirRelativePath;
-            foreach (var dll in info.DllLoadInfos)
+            var data = await Task.WhenAll(info.DllLoadInfos.Select(async dllInfo =>
             {
-                var path = $"{str}{dll.Name}";
-                using (var stream = await httpClient.GetStreamAsync(path))
-                {
-                    metadataReferences.Add(MetadataReference.CreateFromStream(stream));
-                }
-            }
-            stopwatch.Stop();
-            return metadataReferences;
+                var path = $"{str}{dllInfo.Name}";
+                var stream = await httpClient.GetStreamAsync(path);
+                return MetadataReference.CreateFromStream(stream);
+            }));
+            return data;
         }
     }
 }
