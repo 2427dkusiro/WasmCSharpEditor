@@ -40,9 +40,11 @@ namespace WasmCsTest.Codes
         /// <returns></returns>
         public static async Task<CodeMirrorWrapper> CreateInstanceAsync(IJSRuntime jSRuntime)
         {
-            CodeMirrorWrapper codeMirrorWrapper = new CodeMirrorWrapper();
-            codeMirrorWrapper.guid = Guid.NewGuid();
-            codeMirrorWrapper.module = await jSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/CodeEditorHandler.js");
+            var codeMirrorWrapper = new CodeMirrorWrapper
+            {
+                guid = Guid.NewGuid(),
+                module = await jSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/CodeEditorHandler.js")
+            };
             await codeMirrorWrapper.InitializeEvent();
 
             return codeMirrorWrapper;

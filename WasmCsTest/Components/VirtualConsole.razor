@@ -19,14 +19,23 @@
     [Parameter]
     public WasmCsTest.Codes.CodeEditorContext CodeEditorContext { get; set; }
 
+    /*
     private System.IO.StreamReader streamReader;
+
     protected override async Task OnInitializedAsync()
     {
-        VirtualConsoleWriter virtualConsoleOut = new VirtualConsoleWriter((string str) => text += str);
-        VirtualConsoleWriter virtualConsoleError = new VirtualConsoleWriter((string str) => text += str);
+        Action<string> action = (string str) =>
+        {
+            text += str ?? "";
+            this.StateHasChanged();
+
+        };
+        VirtualConsoleWriter virtualConsoleOut = new VirtualConsoleWriter(action);
+        VirtualConsoleWriter virtualConsoleError = new VirtualConsoleWriter(action);
         streamReader = new System.IO.StreamReader(new System.IO.MemoryStream());
         CodeEditorContext.StdOut = virtualConsoleOut;
         CodeEditorContext.StdError = virtualConsoleError;
         CodeEditorContext.StdIn = streamReader;
     }
+    */
 }

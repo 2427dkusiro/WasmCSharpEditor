@@ -28,13 +28,13 @@ namespace WasmCsTest.Codes
         [JSInvokable]
         public static void RaiseOnChangeEventFromJs(string guid)
         {
-            Guid key = Guid.Parse(guid);
+            var key = Guid.Parse(guid);
             if (!dictionary.ContainsKey(key))
             {
                 return;
             }
 
-            foreach (var handler in dictionary[key])
+            foreach (EventHandler handler in dictionary[key])
             {
                 handler?.Invoke(null, new EventArgs());
             }

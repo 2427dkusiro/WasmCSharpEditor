@@ -13,19 +13,4 @@ namespace WasmCsTest.Components
     {
 
     }
-
-    public class VirtualConsoleWriter : SimpleTextWriter
-    {
-        private readonly Action<string> action;
-
-        public VirtualConsoleWriter(Action<string> action)
-        {
-            this.action = action;
-        }
-
-        public override void WriteString(string value)
-        {
-            action?.Invoke(value);
-        }
-    }
 }

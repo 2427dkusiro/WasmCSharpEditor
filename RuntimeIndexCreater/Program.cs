@@ -1,62 +1,101 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 
 namespace RuntimeIndexCreater
 {
-    class Program
+    internal class Program
     {
-        const string output = @"C:\Users\Kota\Desktop\DLLIndex.json";
+        private const string output = @"C:\Users\Kota\Desktop\DLLIndex.json";
         private static readonly string[] execludes = new[]
         {
             "CodeRunner.dll",
             "WasmCsTest.dll",
         };
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            string path = null;
+            string frameworkDirPath = null;
             while (true)
             {
                 Console.WriteLine("Input path to '_framework' dir");
-                path = Console.ReadLine();
-                if (Directory.Exists(path))
+                frameworkDirPath = Console.ReadLine();
+                if (frameworkDirPath.StartsWith("\""))
+                {
+                    frameworkDirPath = frameworkDirPath[1..^1];
+                }
+                if (Directory.Exists(frameworkDirPath))
                 {
                     break;
                 }
                 Console.WriteLine("There is no such a dir");
             }
 
-            List<CodeRunner.DllLoader.DllLoadInfo> dllLoadInfos = new List<CodeRunner.DllLoader.DllLoadInfo>();
-            var files = Directory.GetFiles(path, "*.dll", SearchOption.TopDirectoryOnly);
-            foreach (var file in files)
+            var dllLoadInfos = new List<CodeRunner.DllLoader.DllLoadInfo>();
+            string[] files = Directory.GetFiles(frameworkDirPath, "*.dll", SearchOption.TopDirectoryOnly);
+            foreach (string file in files)
             {
                 if (execludes.Contains(Path.GetFileName(file)))
                 {
                     continue;
                 }
-                using (FileStream fileStream = new FileStream(file, FileMode.Open))
+                using (var fileStream = new FileStream(file, FileMode.Open))
                 {
-                    var hash = SHA256.Create().ComputeHash(fileStream);
-                    var str = Convert.ToBase64String(hash);
+                    byte[] hash = SHA256.Create().ComputeHash(fileStream);
+                    string str = Convert.ToBase64String(hash);
                     dllLoadInfos.Add(new CodeRunner.DllLoader.DllLoadInfo()
                     {
                         Name = Path.GetFileName(file),
+                        CultureString = null,
                     });
                 }
             }
 
-            CodeRunner.DllLoader.LoadInfo loadInfo = new CodeRunner.DllLoader.LoadInfo()
+            var dirs = Directory.GetDirectories(frameworkDirPath);
+            foreach (var dir in dirs)
+            {
+                var name = Path.GetFileName(dir);
+                CultureInfo cultureInfo;
+                try
+                {
+                    cultureInfo = CultureInfo.GetCultureInfo(name);
+                }
+                catch (CultureNotFoundException)
+                {
+                    continue;
+                }
+                var cfiles = Directory.GetFiles(dir, "*.dll", SearchOption.TopDirectoryOnly);
+                foreach (string cfile in cfiles)
+                {
+                    if (execludes.Contains(Path.GetFileName(cfile)))
+                    {
+                        continue;
+                    }
+
+                    var newPath = $"{frameworkDirPath}\\{cultureInfo.Name}_{Path.GetFileName(cfile)}";
+                    File.Copy(cfile, newPath);
+
+                    dllLoadInfos.Add(new CodeRunner.DllLoader.DllLoadInfo()
+                    {
+                        Name = Path.GetFileName(newPath),
+                        CultureString = cultureInfo.Name,
+                    });
+                }
+            }
+
+            var loadInfo = new CodeRunner.DllLoader.LoadInfo()
             {
                 DllLoadInfos = dllLoadInfos.ToArray(),
             };
-            var json = JsonSerializer.Serialize(loadInfo);
+            string json = JsonSerializer.Serialize(loadInfo);
 
-            using (StreamWriter streamWriter = new StreamWriter(output, false, Encoding.UTF8))
+            using (var streamWriter = new StreamWriter(output, false, Encoding.UTF8))
             {
                 streamWriter.Write(json);
             }

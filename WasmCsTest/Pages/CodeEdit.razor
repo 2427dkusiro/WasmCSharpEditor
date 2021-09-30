@@ -2,54 +2,65 @@
 @using System.Collections.Generic;
 @using System.Linq;
 
-@using CodeRunner;
 @using Codes;
-@using Components;
 
 @inject HttpClient Http;
 @inject IJSRuntime JS;
+@inject CompileQueueService CompileQueue;
 
 @page "/CodeEdit"
 
+<style>
+    .width-matchParent {
+        width: 100%
+    }
+</style>
+
 <WasmCsTest.Components.CodeEditor @bind-UserCode="userCode" @bind-UserCode:event="OnChanged" CodeEditorContext="CodeEditorContext" />
 
-@if (!CodeEditorContext.IsCodeCompiling)
+@if (CodeEditorContext.CompileState == CompileStatus.Completed || CodeEditorContext.CompileState == CompileStatus.Default)
 {
-    <button class="btn btn-primary" style="width:100%;" @onclick="OnRunButtonClicked">実行</button>
+    <button class="width-matchParent btn btn-primary" @onclick="OnRunButtonClicked">実行</button>
 }
 else
 {
-    <button class="btn btn-secondary" style="width:100%;">中断</button>
+    <button class="width-matchParent btn btn-secondary">中断</button>
 }
 
 <hr />
 
 <WasmCsTest.Components.CompileResult CodeEditorContext="CodeEditorContext" />
 
+<hr />
+
 <WasmCsTest.Components.VirtualConsole CodeEditorContext="CodeEditorContext" />
 
 @code{
     private string userCode;
-
     private CodeEditorContext CodeEditorContext;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        CodeEditorContext = new CodeEditorContext(Http);
+        CodeEditorContext = new CodeEditorContext(CompileQueue);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // CodeEditorContext.TryInitializing();
+        await CompileQueue.TryInitialize(JS, Http);
     }
 
     private async Task OnRunButtonClicked()
     {
-        var result = await CodeEditorContext.Compile(userCode);
+        await CodeEditorContext.Compile(userCode);
         this.StateHasChanged();
+        await Task.Delay(1);
+
+        /*
         if (result.IsSuccessed)
         {
-            await CodeEditorContext.RunCode(result);
+            var task = CodeEditorContext.RunCode(result);
+            await task;
         }
+        */
     }
 }

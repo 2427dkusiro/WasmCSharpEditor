@@ -2,7 +2,7 @@
 {
     public static class InjectCode
     {
-        public static string Code { get; } =@"namespace __CompilerGenerated
+        public static string Code { get; } = @"namespace __CompilerGenerated
 {
     public static class __CompilerGenerated
     {

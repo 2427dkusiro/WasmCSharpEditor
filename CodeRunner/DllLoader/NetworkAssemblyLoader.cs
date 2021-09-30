@@ -17,25 +17,20 @@ namespace CodeRunner.DllLoader
     public class NetworkAssemblyLoader
     {
         private readonly HttpClient httpClient;
-        private readonly string indexPath;
 
-        public NetworkAssemblyLoader(HttpClient httpClient, string indexPath)
+        public NetworkAssemblyLoader(HttpClient httpClient)
         {
             this.httpClient = httpClient;
-            this.indexPath = indexPath;
         }
 
         public async Task<IEnumerable<MetadataReference>> LoadAsync()
         {
-            var info = await httpClient.GetFromJsonAsync<LoadInfo>(indexPath);
-            var str = LoadInfo.DirRelativePath;
-            var data = await Task.WhenAll(info.DllLoadInfos.Select(async dllInfo =>
+            IEnumerable<string> paths = await DllInfoProvider.GetDllPaths(httpClient);
+            return await Task.WhenAll(paths.Select(async path =>
             {
-                var path = $"{str}{dllInfo.Name}";
-                var stream = await httpClient.GetStreamAsync(path);
+                System.IO.Stream stream = await httpClient.GetStreamAsync(path);
                 return MetadataReference.CreateFromStream(stream);
             }));
-            return data;
         }
     }
 }

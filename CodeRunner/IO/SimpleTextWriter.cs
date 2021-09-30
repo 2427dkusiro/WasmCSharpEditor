@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace WasmCsTest.Codes
+namespace CodeRunner.IO
 {
     public abstract class SimpleTextWriter : TextWriter
     {
@@ -22,13 +22,13 @@ namespace WasmCsTest.Codes
 
         public void WriteGeneric<T>(T value)
         {
-            var str = value.ToString();
+            string str = value?.ToString();
             WriteString(str);
         }
 
         public void WriteLineGeneric<T>(T value)
         {
-            var str = value.ToString();
+            string str = value?.ToString();
             WriteString(str + NewLine);
         }
 

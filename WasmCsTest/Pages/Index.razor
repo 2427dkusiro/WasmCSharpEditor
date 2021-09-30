@@ -22,19 +22,13 @@ C#をブラウザ上で実行する実験的プロジェクトです。C#コン�
 <p>下のボタンを押すことで、ILやC#が実際に動的実行され、現在の時刻が表示されます。</p>
 
 <button @onclick="SetSecondFromIL">現在の時刻を表示(IL経由)</button>
-<button @onclick="SetSecondFromCSharp">現在の時刻を表示(C#経由)</button>
+<button @onclick="SetSecondFromCSharp">現在の時刻を表示(C#経由)　※無効化中</button>
 
 <h2>@field1</h2>
 
 
 @code{
-    private WasmCsTest.Codes.CodeEditorContext codeEditorContext;
     private string field1;
-
-    protected override async Task OnInitializedAsync()
-    {
-        codeEditorContext = new Codes.CodeEditorContext(Http);
-    }
 
     private void SetSecondFromIL()
     {
@@ -57,6 +51,6 @@ C#をブラウザ上で実行する実験的プロジェクトです。C#コン�
 
     private async Task SetSecondFromCSharp()
     {
-        
+        throw new NotImplementedException();
     }
 }
