@@ -18,13 +18,17 @@
 
 <WasmCsTest.Components.CodeEditor @bind-UserCode="userCode" @bind-UserCode:event="OnChanged" CodeEditorContext="CodeEditorContext" />
 
-@if (CodeEditorContext.CompileState == CompileStatus.Completed || CodeEditorContext.CompileState == CompileStatus.Default)
+@if (isCompiling)
 {
-    <button class="width-matchParent btn btn-primary" @onclick="OnRunButtonClicked">実行</button>
+    <button class="width-matchParent btn btn-secondary">コンパイル取消(未実装)</button>
+}
+else if (isRunning)
+{
+    <button class="width-matchParent btn btn-secondary">プログラム強制終了(未実装)</button>
 }
 else
 {
-    <button class="width-matchParent btn btn-secondary">中断</button>
+    <button class="width-matchParent btn btn-primary" @onclick="OnRunButtonClicked">実行</button>
 }
 
 <hr />
@@ -39,9 +43,17 @@ else
     private string userCode;
     private CodeEditorContext CodeEditorContext;
 
+    private bool isCompiling => CodeEditorContext.CompileState == CompileStatus.CompileWaiting || CodeEditorContext.CompileState == CompileStatus.Compiling;
+    private bool isRunning => CodeEditorContext.RunCodeState == RunCodeStatus.RunWaiting || CodeEditorContext.RunCodeState == RunCodeStatus.Running;
+
     protected override void OnInitialized()
     {
         CodeEditorContext = new CodeEditorContext(CompileQueue);
+        CodeEditorContext.AddUpdateUiCallBack(async () =>
+        {
+            StateHasChanged();
+            await Task.Yield();
+        });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -52,15 +64,9 @@ else
     private async Task OnRunButtonClicked()
     {
         await CodeEditorContext.Compile(userCode);
-        this.StateHasChanged();
-        await Task.Delay(1);
-
-        /*
-        if (result.IsSuccessed)
+        if (CodeEditorContext.CompileResult.IsSuccessed)
         {
-            var task = CodeEditorContext.RunCode(result);
-            await task;
+            await CodeEditorContext.RunCodeAsync();
         }
-        */
     }
 }

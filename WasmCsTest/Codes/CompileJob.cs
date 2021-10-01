@@ -36,6 +36,11 @@ namespace WasmCsTest.Codes
         /// コンパイルの結果を取得または設定します。
         /// </summary>
         public CompilerResultMessage CompileResult { get; set; }
+
+        /// <summary>
+        /// コンパイル結果に関連付けられたIDを取得または設定します。
+        /// </summary>
+        public Guid CompileResultId { get; set; }
     }
 
     /// <summary>

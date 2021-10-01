@@ -6,41 +6,70 @@
     }
 </style>
 
-<h4>コンパイル結果</h4>
+<h4>実行結果</h4>
 
-@switch (CodeEditorContext.CompileState)
-{
-    case WasmCsTest.Codes.CompileStatus.Default:
-        <span class="compileResult ">コードはまだ一度も実行されていません。</span>
-        break;
-    case CompileStatus.CompileWaiting:
-        <span class="compileResult ">実行の順番待ちをしています。</span>
-        break;
-    case CompileStatus.Compiling:
-        <span class="compileResult ">コンパイルしています。</span>
-        break;
-    case CompileStatus.Completed:
-        @if (CodeEditorContext.CompileResult.IsSuccessed)
+<div>
+    @switch (CodeEditorContext.CompileState)
+    {
+        case WasmCsTest.Codes.CompileStatus.Default:
+            <span class="compileResult ">コードはまだ一度も実行されていません。</span>
+            break;
+        case CompileStatus.CompileWaiting:
+            <span class="compileResult ">実行の順番待ちをしています。</span>
+            break;
+        case CompileStatus.Compiling:
+            <span class="compileResult ">コンパイルしています。</span>
+            break;
+        case CompileStatus.Completed:
+            @if (CodeEditorContext.CompileResult.IsSuccessed)
+            {
+                <span class="compileResult text-success">✔コンパイル成功</span>
+                <span>@GetTimeString</span>}
+            else
+            {
+                <span class="compileResult text-danger">❌コンパイル失敗</span>
+                <span>@GetTimeString</span>
+                <ul>
+                    @foreach (var d in CodeEditorContext.CompileResult.Diagnostics)
+                    {
+                        <li>@d.ToString()</li>
+                    }
+                </ul>
+            }
+            break;
+    }
+</div>
+
+<div>
+    @if ((CodeEditorContext.CompileResult?.IsSuccessed ?? false) && CodeEditorContext.RunCodeResult != null)
+    {
+        if (CodeEditorContext.RunCodeResult.IsSuccessed)
         {
-            <span class="compileResult text-success">✔コンパイル成功</span>
-            <span>@GetTimeString</span>}
+            <span class="compileResult text-success">✔プログラムは正常に終了しました。</span>
+        }
         else
         {
-            <span class="compileResult text-danger">❌コンパイル失敗</span>
-            <span>@GetTimeString</span>
-            <ul>
-                @foreach (var d in CodeEditorContext.CompileResult.Diagnostics)
-                {
-                    <li>@d.ToString()</li>
-                }
-            </ul>
+            <span class="compileResult text-danger">❌プログラム実行中にエラーが発生しました。</span>
+            if (CodeEditorContext.RunCodeResult.OccurredException != null)
+            {
+                <pre>@CodeEditorContext.RunCodeResult.OccurredException.ToString()</pre>
+            }
         }
-        break;
-}
+    }
+</div>
 
 @code {
     [Parameter]
     public WasmCsTest.Codes.CodeEditorContext CodeEditorContext { get; set; }
 
     private string GetTimeString { get => $"{CodeEditorContext.CompileTime.TotalMilliseconds}ms"; }
+
+    protected override void OnInitialized()
+    {
+        CodeEditorContext.AddUpdateUiCallBack(async () =>
+        {
+            StateHasChanged();
+            await Task.Yield();
+        });
+    }
 }

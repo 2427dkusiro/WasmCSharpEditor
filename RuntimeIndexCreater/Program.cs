@@ -57,10 +57,10 @@ namespace RuntimeIndexCreater
                 }
             }
 
-            var dirs = Directory.GetDirectories(frameworkDirPath);
-            foreach (var dir in dirs)
+            string[] dirs = Directory.GetDirectories(frameworkDirPath);
+            foreach (string dir in dirs)
             {
-                var name = Path.GetFileName(dir);
+                string name = Path.GetFileName(dir);
                 CultureInfo cultureInfo;
                 try
                 {
@@ -70,7 +70,7 @@ namespace RuntimeIndexCreater
                 {
                     continue;
                 }
-                var cfiles = Directory.GetFiles(dir, "*.dll", SearchOption.TopDirectoryOnly);
+                string[] cfiles = Directory.GetFiles(dir, "*.dll", SearchOption.TopDirectoryOnly);
                 foreach (string cfile in cfiles)
                 {
                     if (execludes.Contains(Path.GetFileName(cfile)))
@@ -78,7 +78,7 @@ namespace RuntimeIndexCreater
                         continue;
                     }
 
-                    var newPath = $"{frameworkDirPath}\\{cultureInfo.Name}_{Path.GetFileName(cfile)}";
+                    string newPath = $"{frameworkDirPath}\\{cultureInfo.Name}_{Path.GetFileName(cfile)}";
                     File.Copy(cfile, newPath);
 
                     dllLoadInfos.Add(new CodeRunner.DllLoader.DllLoadInfo()

@@ -234,6 +234,7 @@ namespace CodeRunner
             IsSuccessed = isSuccessed;
             Diagnostics = diagnostics;
             Assembly = assembly;
+            MainMethod = mainMethod;
         }
 
         /// <summary>

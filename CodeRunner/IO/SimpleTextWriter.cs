@@ -8,25 +8,34 @@ using System.Threading.Tasks;
 
 namespace CodeRunner.IO
 {
+    /// <summary>
+    /// <see cref="TextWriter"/> の実装を簡略化します。<see cref="WriteString(string)"/> を実装するだけで利用できます。
+    /// </summary>
     public abstract class SimpleTextWriter : TextWriter
     {
-        public override Encoding Encoding => throw new NotImplementedException();
+        /// <inheritdoc />
+        public override Encoding Encoding => Encoding.GetEncoding("UTF-16");
 
+        /// <inheritdoc />
         public override string NewLine
         {
             get => Environment.NewLine;
             set => _ = value;
         }
 
+        /// <summary>
+        /// 派生クラスでオーバーライドされた場合は、文字列を書き込みます。
+        /// </summary>
+        /// <param name="value"></param>
         public abstract void WriteString(string value);
 
-        public void WriteGeneric<T>(T value)
+        protected void WriteGeneric<T>(T value)
         {
             string str = value?.ToString();
             WriteString(str);
         }
 
-        public void WriteLineGeneric<T>(T value)
+        protected void WriteLineGeneric<T>(T value)
         {
             string str = value?.ToString();
             WriteString(str + NewLine);
@@ -128,35 +137,6 @@ namespace CodeRunner.IO
         {
             WriteGeneric(value);
         }
-        #endregion
-
-        #region WriteAsyncs(未実装)
-
-        public override Task WriteAsync(char value)
-        {
-            return base.WriteAsync(value);
-        }
-
-        public override Task WriteAsync(char[] buffer, int index, int count)
-        {
-            return base.WriteAsync(buffer, index, count);
-        }
-
-        public override Task WriteAsync(ReadOnlyMemory<char> buffer, CancellationToken cancellationToken = default)
-        {
-            return base.WriteAsync(buffer, cancellationToken);
-        }
-
-        public override Task WriteAsync(string value)
-        {
-            return base.WriteAsync(value);
-        }
-
-        public override Task WriteAsync(StringBuilder value, CancellationToken cancellationToken = default)
-        {
-            return base.WriteAsync(value, cancellationToken);
-        }
-
         #endregion
 
         #region WriteLines

@@ -27,7 +27,7 @@ namespace WasmCsTest.Codes
 
         private WorkerFactory factory;
         private IWorker worker;
-        IWorkerBackgroundService<CodeCompileService> service;
+        private IWorkerBackgroundService<CodeCompileService> service;
 
         private bool isInitialized;
         private bool isInitializing;
@@ -60,9 +60,9 @@ namespace WasmCsTest.Codes
 
         private async Task InitializeAsync(IJSRuntime jSRuntime, HttpClient httpClient)
         {
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
 
-            var names = await CodeRunner.DllLoader.DllInfoProvider.GetDllNames(httpClient);
+            IEnumerable<string> names = await CodeRunner.DllLoader.DllInfoProvider.GetDllNames(httpClient);
             factory = new WorkerFactory(jSRuntime);
             worker = await factory.CreateAsync();
             service = await worker.CreateBackgroundServiceAsync<CodeCompileService>(options => options
@@ -72,14 +72,26 @@ namespace WasmCsTest.Codes
              );
             Console.WriteLine($"ワーカー起動に要した時間:{stopwatch.ElapsedMilliseconds}ms");
             await service.RunAsync(obj => obj.InitializeCompilerAwaitableAsync());
+            await service.RegisterEventListenerAsync<string>(nameof(CodeCompileService.StdOutWrited), OnStdOutReceived);
+            await service.RegisterEventListenerAsync<string>(nameof(CodeCompileService.StdErrorWrited), OnStdErrorReceived);
             stopwatch.Stop();
             Console.WriteLine($"コンパイラ初期化に要した総時間:{stopwatch.ElapsedMilliseconds}ms");
         }
 
-        private long currentWorkableJob;
+        private long currentWorkableJob = 0;
 
-        private object nextAssignSync = new();
-        private long nextAssign;
+        private readonly object nextAssignSync = new();
+        private long nextAssign = 0;
+
+        public void OnStdOutReceived(object sender, string e)
+        {
+            runCodeJob?.WriteStdOutCallBack.Invoke(e);
+        }
+
+        public void OnStdErrorReceived(object sender, string e)
+        {
+            runCodeJob?.WriteStdErrorCallBack.Invoke(e);
+        }
 
         /// <summary>
         /// <see cref="CompileJob"/> をコンパイルキューに追加し、コンパイル終了後に完了する <see cref="Task"/> を取得します。
@@ -87,7 +99,52 @@ namespace WasmCsTest.Codes
         /// </summary>
         /// <param name="compileJob"></param>
         /// <returns></returns>
-        public async Task CompileAsync(CompileJob compileJob)
+        public async Task CompileAsync(CompileJob compileJob, IEnumerable<Func<Task>> updateCallBack = null)
+        {
+            await Enqueue(() => CompileAsyncCore(compileJob));
+        }
+
+        private async Task CompileAsyncCore(CompileJob compileJob, IEnumerable<Func<Task>> updateCallBack = null)
+        {
+            compileJob.CompileState = CompileStatus.Compiling;
+            await InvokeAllAsync(updateCallBack);
+            var stopwatch = Stopwatch.StartNew();
+            CompilerResultMessage compileResult = await service.RunAsync(compiler => compiler.CompileAsync(compileJob.Code));
+            stopwatch.Stop();
+            compileJob.CompileResult = compileResult;
+            compileJob.CompileState = CompileStatus.Completed;
+            compileJob.CompileTime = stopwatch.Elapsed;
+            compileJob.CompileResultId = compileResult.CompileId;
+            await InvokeAllAsync(updateCallBack);
+        }
+
+        public async Task RunCodeAsync(RunCodeJob runCodeJob, IEnumerable<Func<Task>> updateCallBack = null)
+        {
+            await Enqueue(() => RunCodeAsyncCore(runCodeJob, updateCallBack));
+        }
+
+        private RunCodeJob runCodeJob;
+        private async Task RunCodeAsyncCore(RunCodeJob runCodeJob, IEnumerable<Func<Task>> updateCallBack = null)
+        {
+            runCodeJob.RunCodeStatus = RunCodeStatus.Running;
+            await InvokeAllAsync(updateCallBack);
+            this.runCodeJob = runCodeJob;
+            var result = await service.RunAsync(runner => runner.RunCodeAsync(runCodeJob.AssemblyId));
+            runCodeJob.RunCodeStatus = RunCodeStatus.Completed;
+            runCodeJob.RunCodeResult = result;
+            await InvokeAllAsync(updateCallBack);
+        }
+
+        private async Task InvokeAllAsync(IEnumerable<Func<Task>> funcs)
+        {
+            if (funcs is null)
+            {
+                return;
+            }
+            await Task.WhenAll(funcs.Select(x => x.Invoke()));
+        }
+
+        private async Task Enqueue(Func<Task> func)
         {
             long jobNum;
             lock (nextAssignSync)
@@ -99,11 +156,11 @@ namespace WasmCsTest.Codes
             {
                 if (!isInitialized)
                 {
-                    await Task.Delay(20);
+                    await Task.Delay(25);
                 }
                 else if (jobNum > currentWorkableJob)
                 {
-                    await Task.Delay(20);
+                    await Task.Delay(25);
                 }
                 else if (jobNum == currentWorkableJob)
                 {
@@ -114,19 +171,8 @@ namespace WasmCsTest.Codes
                     throw new InvalidOperationException();
                 }
             }
-            await CompileAsyncCore(compileJob);
+            await func();
             currentWorkableJob++;
-        }
-
-        private async Task CompileAsyncCore(CompileJob compileJob)
-        {
-            compileJob.CompileState = CompileStatus.Compiling;
-            Stopwatch stopwatch = Stopwatch.StartNew();
-            var compileResult = await service.RunAsync(compiler => compiler.CompileAsync(compileJob.Code));
-            stopwatch.Stop();
-            compileJob.CompileResult = compileResult;
-            compileJob.CompileState = CompileStatus.Completed;
-            compileJob.CompileTime = stopwatch.Elapsed;
         }
     }
 }

@@ -7,10 +7,17 @@
     }
 </style>
 
-<h4>仮想コンソール</h4>
+@if (CodeEditorContext.RunCodeState == Codes.RunCodeStatus.Running)
+{
+    <h4>仮想コンソール(実行中)</h4>
+}
+else
+{
+    <h4>仮想コンソール</h4>
+}
 
 <div>
-    <textarea id="virtualConsole" @bind="text" rows="8" />
+    <textarea id="virtualConsole" spellcheck="false" readonly="readonly" @bind="text" rows="8" />
 </div>
 
 @code {
@@ -19,10 +26,8 @@
     [Parameter]
     public WasmCsTest.Codes.CodeEditorContext CodeEditorContext { get; set; }
 
-    /*
-    private System.IO.StreamReader streamReader;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         Action<string> action = (string str) =>
         {
@@ -30,12 +35,12 @@
             this.StateHasChanged();
 
         };
-        VirtualConsoleWriter virtualConsoleOut = new VirtualConsoleWriter(action);
-        VirtualConsoleWriter virtualConsoleError = new VirtualConsoleWriter(action);
-        streamReader = new System.IO.StreamReader(new System.IO.MemoryStream());
-        CodeEditorContext.StdOut = virtualConsoleOut;
-        CodeEditorContext.StdError = virtualConsoleError;
-        CodeEditorContext.StdIn = streamReader;
+        CodeEditorContext.WriteStdOut = action;
+        CodeEditorContext.WriteStdError = action;
+        CodeEditorContext.AddUpdateUiCallBack(async () =>
+        {
+            StateHasChanged();
+            await Task.Yield();
+        });
     }
-    */
 }

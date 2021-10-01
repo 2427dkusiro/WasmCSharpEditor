@@ -1,6 +1,8 @@
 ﻿using CodeRunner;
 
 using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace WasmCsTest.Codes
@@ -28,29 +30,68 @@ namespace WasmCsTest.Codes
         /// <returns></returns>
         public async Task Compile(string code)
         {
+            if (code is null)
+            {
+                throw new ArgumentNullException(nameof(code));
+            }
+
             var job = new CompileJob()
             {
                 Code = code,
             };
             compileJob = job;
-            await compileQueueService.CompileAsync(job);
+            await compileQueueService.CompileAsync(job, updateUiCallBacks);
+        }
+
+        public async Task RunCodeAsync()
+        {
+            if (compileJob is null)
+            {
+                throw new InvalidOperationException("コンパイルが実行されていません");
+            }
+            if (!compileJob.CompileResult.IsSuccessed)
+            {
+                throw new InvalidOperationException("コンパイル失敗した結果は実行できません");
+            }
+
+            var job = new RunCodeJob()
+            {
+                AssemblyId = compileJob.CompileResultId,
+                WriteStdOutCallBack = WriteStdOut,
+                WriteStdErrorCallBack = WriteStdError,
+            };
+            runCodeJob = job;
+            await compileQueueService.RunCodeAsync(job, updateUiCallBacks);
         }
 
         private CompileJob compileJob;
+        private RunCodeJob runCodeJob;
+
+        private readonly List<Func<Task>> updateUiCallBacks = new List<Func<Task>>();
+        public void AddUpdateUiCallBack(Func<Task> func) => updateUiCallBacks.Add(func);
+        public void RemoveUpdateUiCallBack(Func<Task> func) => updateUiCallBacks.Remove(func);
 
         /// <summary>
         /// コンパイルの状態を取得します。
         /// </summary>
-        public CompileStatus CompileState { get => compileJob?.CompileState ?? CompileStatus.Default; }
+        public CompileStatus CompileState => compileJob?.CompileState ?? CompileStatus.Default;
 
         /// <summary>
         /// コンパイルの結果を取得します。
         /// </summary>
-        public CompilerResultMessage CompileResult { get => compileJob?.CompileResult; }
+        public CompilerResultMessage CompileResult => compileJob?.CompileResult;
 
         /// <summary>
         /// コンパイルにかかった時間を取得します。
         /// </summary>
-        public TimeSpan CompileTime { get => compileJob.CompileTime; }
+        public TimeSpan CompileTime => compileJob.CompileTime;
+
+        public Action<string> WriteStdOut { get; set; }
+
+        public Action<string> WriteStdError { get; set; }
+
+        public RunCodeStatus RunCodeState => runCodeJob?.RunCodeStatus ?? RunCodeStatus.Default;
+
+        public RunCodeResult RunCodeResult => runCodeJob?.RunCodeResult;
     }
 }
