@@ -73,6 +73,7 @@ namespace RuntimeIndexCreater
                 }
             }
 
+            /* カルチャ依存DLL読み込み部(保留)
             string[] dirs = Directory.GetDirectories(frameworkDirPath);
             foreach (string dir in dirs)
             {
@@ -104,6 +105,7 @@ namespace RuntimeIndexCreater
                     });
                 }
             }
+            */
 
             var loadInfo = new CodeRunner.DllLoader.LoadInfo()
             {
