@@ -95,7 +95,7 @@ namespace CodeRunner
             {
                 throw new ArgumentNullException(nameof(diagnostic));
             }
-            var formatProvider = CultureInfo.GetCultureInfo("ja");
+            var formatProvider = CultureInfo.CurrentUICulture;
             LocationKind kind = diagnostic.Location.Kind;
             if (kind == LocationKind.SourceFile || kind - 3 <= LocationKind.SourceFile)
             {

@@ -2,9 +2,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CodeRunner
@@ -15,10 +15,9 @@ namespace CodeRunner
     public class CodeCompileService
     {
         private readonly CSharpCompiler cSharpCompiler;
+        private readonly HttpClient httpClient;
 
         private readonly Dictionary<Guid, CompileResult> resultDictionary = new Dictionary<Guid, CompileResult>();
-
-        private readonly string baseUrl = @"https://localhost:44339/WasmCSharpEditor/";
 
         /// <summary>
         /// <see cref="CodeCompileService"/> クラスの新しいインスタンスを初期化します。
@@ -26,10 +25,19 @@ namespace CodeRunner
         /// <param name="httpClient">有効な <see cref="HttpClient"/>。</param>
         public CodeCompileService(HttpClient httpClient)
         {
-            httpClient.BaseAddress = new Uri(baseUrl);
+            this.httpClient = httpClient;
             cSharpCompiler = new CSharpCompiler(httpClient);
-            // CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ja-JP");
-            // ライブラリがカルチャ依存DLL読んでくれないので暫定保留。
+        }
+
+        /// <summary>
+        /// 親ワーカーから、baseURL と現在のカルチャーを伝播させます。
+        /// </summary>
+        /// <param name="baseUrl"></param>
+        /// <param name="culture"></param>
+        public void ApplyParentContext(string baseUrl, string culture)
+        {
+            httpClient.BaseAddress = new Uri(baseUrl);
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo(culture);
         }
 
         /// <summary>

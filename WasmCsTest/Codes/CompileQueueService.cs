@@ -9,6 +9,7 @@ using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -61,8 +62,9 @@ namespace WasmCsTest.Codes
         private async Task InitializeAsync(IJSRuntime jSRuntime, HttpClient httpClient)
         {
             var stopwatch = Stopwatch.StartNew();
-
-            IEnumerable<string> names = await CodeRunner.DllLoader.DllInfoProvider.GetDllNames(httpClient);
+#warning "ライブラリ側修正次第、CurrentUICultureを読むようにして下さい。"
+            var culture = CultureInfo.InvariantCulture;
+            IEnumerable<string> names = await CodeRunner.DllLoader.DllInfoProvider.GetDllNames(httpClient, culture);
             factory = new WorkerFactory(jSRuntime);
             worker = await factory.CreateAsync();
             service = await worker.CreateBackgroundServiceAsync<CodeCompileService>(options => options
@@ -71,6 +73,7 @@ namespace WasmCsTest.Codes
                  .AddAssemblies(names.ToArray())
              );
             Console.WriteLine($"ワーカー起動に要した時間:{stopwatch.ElapsedMilliseconds}ms");
+            await service.RunAsync(obj => obj.ApplyParentContext(httpClient.BaseAddress.AbsoluteUri, culture.Name));
             await service.RunAsync(obj => obj.InitializeCompilerAwaitableAsync());
             await service.RegisterEventListenerAsync<string>(nameof(CodeCompileService.StdOutWrited), OnStdOutReceived);
             await service.RegisterEventListenerAsync<string>(nameof(CodeCompileService.StdErrorWrited), OnStdErrorReceived);

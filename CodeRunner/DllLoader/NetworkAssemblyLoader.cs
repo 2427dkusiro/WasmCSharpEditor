@@ -25,7 +25,7 @@ namespace CodeRunner.DllLoader
 
         public async Task<IEnumerable<MetadataReference>> LoadAsync()
         {
-            IEnumerable<string> paths = await DllInfoProvider.GetDllPaths(httpClient);
+            IEnumerable<string> paths = await DllInfoProvider.GetDllPaths(httpClient, System.Globalization.CultureInfo.CurrentUICulture);
             return await Task.WhenAll(paths.Select(async path =>
             {
                 System.IO.Stream stream = await httpClient.GetStreamAsync(path);

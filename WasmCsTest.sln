@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31702.278
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WasmCsTest", "WasmCsTest\WasmCsTest.csproj", "{3E041BCB-C67F-4435-B05F-58CB79836154}"
+	ProjectSection(ProjectDependencies) = postProject
+		{972E906B-BFA9-4A2F-91F1-F95E1C1890D5} = {972E906B-BFA9-4A2F-91F1-F95E1C1890D5}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeRunner", "CodeRunner\CodeRunner.csproj", "{7AF21BC3-2D6D-4C15-9480-947E7A0C1082}"
 EndProject

@@ -22,19 +22,35 @@ namespace RuntimeIndexCreater
         private static void Main(string[] args)
         {
             string frameworkDirPath = null;
-            while (true)
+            if (args.Length == 1)
             {
-                Console.WriteLine("Input path to '_framework' dir");
-                frameworkDirPath = Console.ReadLine();
-                if (frameworkDirPath.StartsWith("\""))
+                var arg = args[0];
+                if (Directory.Exists(arg))
                 {
-                    frameworkDirPath = frameworkDirPath[1..^1];
+                    frameworkDirPath = arg;
                 }
-                if (Directory.Exists(frameworkDirPath))
+                else
                 {
-                    break;
+                    Console.WriteLine($"与えられた引数\"{arg}\"は有効なパスではありません");
                 }
-                Console.WriteLine("There is no such a dir");
+            }
+
+            if (frameworkDirPath is null)
+            {
+                while (true)
+                {
+                    Console.WriteLine("Input path to '_framework' dir");
+                    frameworkDirPath = Console.ReadLine();
+                    if (frameworkDirPath.StartsWith("\""))
+                    {
+                        frameworkDirPath = frameworkDirPath[1..^1];
+                    }
+                    if (Directory.Exists(frameworkDirPath))
+                    {
+                        break;
+                    }
+                    Console.WriteLine("There is no such a dir");
+                }
             }
 
             var dllLoadInfos = new List<CodeRunner.DllLoader.DllLoadInfo>();
