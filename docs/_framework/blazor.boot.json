@@ -195,8 +195,8 @@
       "BlazorWorker.WorkerBackgroundService.dll": "sha256-O9r7+V0jRkH7q9eeXYoZpHSIbPehU7Y4W6jiAGktq6I=",
       "BlazorWorker.Core.dll": "sha256-txHofR04834IbpH\/lif4F1M\/tMondmiTYrihzmOe9uA=",
       "BlazorWorker.WorkerCore.dll": "sha256-tPGeue6mKLlO27LO5HJfFLl8Mx0ANUyfOEtyv4tHoRY=",
-      "CodeRunner.dll": "sha256-3t6Bdqc9HsVF4doxlz6Xu2wm2d9J0\/9kkhwA9Xg9prs=",
-      "WasmCsTest.dll": "sha256-WG\/NGvu98L1y7yYugGW87xAnITOFGsLzfW3p5KuopKQ="
+      "CodeRunner.dll": "sha256-u\/5aPFGj9yRYQgf+V14kTg1hUs4yD23Zq2kWBeeNHAY=",
+      "WasmCsTest.dll": "sha256-J4r9T6yjEBCF3VgNUdd2JeHQce9YkPdor0D2cotXDV8="
     },
     "lazyAssembly": null,
     "pdb": null,
