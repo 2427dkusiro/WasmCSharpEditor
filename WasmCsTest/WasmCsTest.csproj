@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -22,12 +22,10 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.10" PrivateAssets="all" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
     <PackageReference Include="Tewr.BlazorWorker.BackgroundService" Version="3.0.0" />
+    <PackageReference Include="Tewr.BlazorWorker.Extensions.JSRuntime" Version="1.0.1-preview" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\CodeRunner\CodeRunner.csproj" />
   </ItemGroup>
-
-  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
-
 </Project>

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WasmCsTest.Codes
+namespace WasmCsTest.WorkerConnection
 {
     /// <summary>
     /// コンパイラに渡すジョブを表現します。

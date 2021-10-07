@@ -6,6 +6,9 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.11.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+    <PackageReference Include="Microsoft.JSInterop" Version="5.0.10" />
+    <PackageReference Include="Tewr.BlazorWorker.Extensions.JSRuntime" Version="1.0.1-preview" />
   </ItemGroup>
 
 </Project>

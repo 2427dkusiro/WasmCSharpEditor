@@ -1,9 +1,12 @@
 ﻿using CodeRunner.IO;
 
+using Microsoft.JSInterop;
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -16,6 +19,7 @@ namespace CodeRunner
     {
         private readonly CSharpCompiler cSharpCompiler;
         private readonly HttpClient httpClient;
+        private readonly IJSRuntime jSRuntime;
 
         private readonly Dictionary<Guid, CompileResult> resultDictionary = new Dictionary<Guid, CompileResult>();
 
@@ -23,9 +27,10 @@ namespace CodeRunner
         /// <see cref="CodeCompileService"/> クラスの新しいインスタンスを初期化します。
         /// </summary>
         /// <param name="httpClient">有効な <see cref="HttpClient"/>。</param>
-        public CodeCompileService(HttpClient httpClient)
+        public CodeCompileService(HttpClient httpClient, IJSRuntime jSRuntime)
         {
             this.httpClient = httpClient;
+            this.jSRuntime = jSRuntime;
             cSharpCompiler = new CSharpCompiler(httpClient);
         }
 
@@ -66,7 +71,18 @@ namespace CodeRunner
         /// <remarks>ライブラリの制約により、戻り値が <see cref="Task"/> 型であるメソッドを正しく待機することができないようであるため、このメソッドを利用することでコンパイラの初期化を待機することができます。</remarks>
         public async Task<string> InitializeCompilerAwaitableAsync()
         {
-            await cSharpCompiler.InitializeAsync();
+            await InitializeCompilerAsync();
+            return null;
+        }
+
+        public async Task<string> TestJS()
+        {
+            var key = "001";
+            await jSRuntime.InvokeVoidAsync("importLocalScripts", "./js/DbOperationsWorker.js");
+            await jSRuntime.InvokeVoidAsync("Load");
+            await jSRuntime.InvokeVoidAsync("Open");
+            var result = await jSRuntime.InvokeAsync<string>("Read", key);
+            Console.WriteLine(result);
             return null;
         }
 

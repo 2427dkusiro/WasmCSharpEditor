@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WasmCsTest.Codes
+namespace WasmCsTest.WorkerConnection
 {
     /// <summary>
     /// JavascriptのイベントからC#のイベントへの変換を支援する機能を提供します。

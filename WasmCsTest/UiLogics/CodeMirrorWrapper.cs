@@ -1,11 +1,13 @@
 ﻿using Microsoft.JSInterop;
 
+using WasmCsTest.WorkerConnection;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WasmCsTest.Codes
+namespace WasmCsTest.UiLogics
 {
     /// <summary>
     /// CodeMirrorの簡易的なC#ラッパーを提供します。

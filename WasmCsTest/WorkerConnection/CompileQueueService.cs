@@ -1,6 +1,7 @@
 ﻿using BlazorWorker.BackgroundServiceFactory;
 using BlazorWorker.Core;
 using BlazorWorker.WorkerBackgroundService;
+using BlazorWorker.Extensions.JSRuntime;
 
 using CodeRunner;
 
@@ -14,7 +15,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace WasmCsTest.Codes
+namespace WasmCsTest.WorkerConnection
 {
     /// <summary>
     /// コンパイルキューを提供します。
@@ -67,13 +68,19 @@ namespace WasmCsTest.Codes
             IEnumerable<string> names = await CodeRunner.DllLoader.DllInfoProvider.GetDllNames(httpClient, culture);
             factory = new WorkerFactory(jSRuntime);
             worker = await factory.CreateAsync();
-            service = await worker.CreateBackgroundServiceAsync<CodeCompileService>(options => options
+            var _service = await worker.CreateBackgroundServiceAsync<CodeCompileServiceStartup>(options => options
                  .AddConventionalAssemblyOfService()
                  .AddHttpClient()
+                 .AddBlazorWorkerJsRuntime()
                  .AddAssemblies(names.ToArray())
              );
+            service = await _service.CreateBackgroundServiceAsync(startup => startup.Resolve<CodeCompileService>());
             Console.WriteLine($"ワーカー起動に要した時間:{stopwatch.ElapsedMilliseconds}ms");
             await service.RunAsync(obj => obj.ApplyParentContext(httpClient.BaseAddress.AbsoluteUri, culture.Name));
+
+            await TestJSAsync(jSRuntime);
+            await service.RunAsync(obj => obj.TestJS());
+
             await service.RunAsync(obj => obj.InitializeCompilerAwaitableAsync());
             await service.RegisterEventListenerAsync<string>(nameof(CodeCompileService.StdOutWrited), OnStdOutReceived);
             await service.RegisterEventListenerAsync<string>(nameof(CodeCompileService.StdErrorWrited), OnStdErrorReceived);
@@ -81,17 +88,25 @@ namespace WasmCsTest.Codes
             Console.WriteLine($"コンパイラ初期化に要した総時間:{stopwatch.ElapsedMilliseconds}ms");
         }
 
+        private async Task TestJSAsync(IJSRuntime jSRuntime)
+        {
+            var key = "001";
+            var module = await jSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DbOperations.js");
+            var db = await module.InvokeAsync<IJSObjectReference>("Open");
+            await module.InvokeVoidAsync("Put", db, key, "testData", (new[] { 'v', 'a', 'l', 'u', 'e' }).Select(x => (byte)x).ToArray());
+        }
+
         private long currentWorkableJob = 0;
 
         private readonly object nextAssignSync = new();
         private long nextAssign = 0;
 
-        public void OnStdOutReceived(object sender, string e)
+        private void OnStdOutReceived(object sender, string e)
         {
             runCodeJob?.WriteStdOutCallBack.Invoke(e);
         }
 
-        public void OnStdErrorReceived(object sender, string e)
+        private void OnStdErrorReceived(object sender, string e)
         {
             runCodeJob?.WriteStdErrorCallBack.Invoke(e);
         }
@@ -101,10 +116,11 @@ namespace WasmCsTest.Codes
         /// コンパイル結果は渡された <see cref="CompileJob"/> に書き込みます。
         /// </summary>
         /// <param name="compileJob"></param>
+        /// <param name="updateCallBack">進捗が変化したことを通知する関数。</param>
         /// <returns></returns>
         public async Task CompileAsync(CompileJob compileJob, IEnumerable<Func<Task>> updateCallBack = null)
         {
-            await Enqueue(() => CompileAsyncCore(compileJob));
+            await Enqueue(() => CompileAsyncCore(compileJob, updateCallBack));
         }
 
         private async Task CompileAsyncCore(CompileJob compileJob, IEnumerable<Func<Task>> updateCallBack = null)
@@ -121,6 +137,13 @@ namespace WasmCsTest.Codes
             await InvokeAllAsync(updateCallBack);
         }
 
+        /// <summary>
+        /// <see cref="RunCodeJob"/> を実行キューに追加し、実行終了後に完了する <see cref="Task"/> を取得します。
+        /// 実行結果は渡された <see cref="RunCodeJob"/> に書き込みます。
+        /// </summary>
+        /// <param name="runCodeJob"></param>
+        /// <param name="updateCallBack">進捗が変化したことを通知する関数。</param>
+        /// <returns></returns>
         public async Task RunCodeAsync(RunCodeJob runCodeJob, IEnumerable<Func<Task>> updateCallBack = null)
         {
             await Enqueue(() => RunCodeAsyncCore(runCodeJob, updateCallBack));
@@ -138,7 +161,7 @@ namespace WasmCsTest.Codes
             await InvokeAllAsync(updateCallBack);
         }
 
-        private async Task InvokeAllAsync(IEnumerable<Func<Task>> funcs)
+        private static async Task InvokeAllAsync(IEnumerable<Func<Task>> funcs)
         {
             if (funcs is null)
             {

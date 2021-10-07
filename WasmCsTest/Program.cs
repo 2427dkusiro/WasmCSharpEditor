@@ -7,7 +7,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-using WasmCsTest.Codes;
+using WasmCsTest.WorkerConnection;
 
 namespace WasmCsTest
 {

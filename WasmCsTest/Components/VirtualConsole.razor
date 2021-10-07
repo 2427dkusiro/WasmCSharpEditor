@@ -1,4 +1,7 @@
-﻿<style>
+﻿@using WasmCsTest.UiLogics; 
+@using WasmCsTest.WorkerConnection;
+
+<style>
     #virtualConsole {
         width: 100%;
         background-color: black;
@@ -7,7 +10,7 @@
     }
 </style>
 
-@if (CodeEditorContext.RunCodeState == Codes.RunCodeStatus.Running)
+@if (CodeEditorContext.RunCodeState == RunCodeStatus.Running)
 {
     <h4>仮想コンソール(実行中)</h4>
 }
@@ -24,7 +27,7 @@ else
     private string text;
 
     [Parameter]
-    public WasmCsTest.Codes.CodeEditorContext CodeEditorContext { get; set; }
+    public CodeEditorContext CodeEditorContext { get; set; }
 
 
     protected override void OnInitialized()
