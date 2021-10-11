@@ -37,8 +37,8 @@ namespace CodeRunner.DllLoader
                 return false;
             }
 
-            var arr1 = c1.Split('-');
-            var arr2 = c2.Split('-');
+            string[] arr1 = c1.Split('-');
+            string[] arr2 = c2.Split('-');
             return arr1.Select(x => arr2.Any(y => x == y)).Any(x => x);
         }
     }

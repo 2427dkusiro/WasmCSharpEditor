@@ -12,6 +12,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeRunner", "CodeRunner\Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RuntimeIndexCreater", "RuntimeIndexCreater\RuntimeIndexCreater.csproj", "{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndexedDbHandler", "IndexedDbHandler\IndexedDbHandler.csproj", "{B185F540-7092-47EC-A74F-88C2543574E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,10 @@ Global
 		{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{972E906B-BFA9-4A2F-91F1-F95E1C1890D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B185F540-7092-47EC-A74F-88C2543574E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B185F540-7092-47EC-A74F-88C2543574E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B185F540-7092-47EC-A74F-88C2543574E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B185F540-7092-47EC-A74F-88C2543574E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

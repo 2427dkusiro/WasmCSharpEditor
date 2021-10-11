@@ -27,5 +27,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CodeRunner\CodeRunner.csproj" />
+    <ProjectReference Include="..\IndexedDbHandler\IndexedDbHandler.csproj" />
   </ItemGroup>
 </Project>

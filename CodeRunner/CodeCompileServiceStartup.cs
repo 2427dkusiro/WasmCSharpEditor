@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using BlazorWorker.Extensions.JSRuntime;
 using BlazorWorker.WorkerCore;
-using BlazorWorker.Extensions.JSRuntime;
 
 using Microsoft.Extensions.DependencyInjection;
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CodeRunner
 {
@@ -31,7 +31,10 @@ namespace CodeRunner
             serviceProvider = ServiceCollectionHelper.BuildServiceProviderFromMethod(Configure);
         }
 
-        public T Resolve<T>() => serviceProvider.GetService<T>();
+        public T Resolve<T>()
+        {
+            return serviceProvider.GetService<T>();
+        }
 
         public void Configure(IServiceCollection services)
         {

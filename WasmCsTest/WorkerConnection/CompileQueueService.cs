@@ -1,10 +1,13 @@
 ﻿using BlazorWorker.BackgroundServiceFactory;
 using BlazorWorker.Core;
-using BlazorWorker.WorkerBackgroundService;
 using BlazorWorker.Extensions.JSRuntime;
+using BlazorWorker.WorkerBackgroundService;
 
 using CodeRunner;
 
+using IndexedDbHandler;
+
+using Microsoft.CodeAnalysis.Operations;
 using Microsoft.JSInterop;
 
 using System;
@@ -13,6 +16,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace WasmCsTest.WorkerConnection
@@ -64,11 +68,11 @@ namespace WasmCsTest.WorkerConnection
         {
             var stopwatch = Stopwatch.StartNew();
 #warning "ライブラリ側修正次第、CurrentUICultureを読むようにして下さい。"
-            var culture = CultureInfo.InvariantCulture;
+            CultureInfo culture = CultureInfo.InvariantCulture;
             IEnumerable<string> names = await CodeRunner.DllLoader.DllInfoProvider.GetDllNames(httpClient, culture);
             factory = new WorkerFactory(jSRuntime);
             worker = await factory.CreateAsync();
-            var _service = await worker.CreateBackgroundServiceAsync<CodeCompileServiceStartup>(options => options
+            IWorkerBackgroundService<CodeCompileServiceStartup> _service = await worker.CreateBackgroundServiceAsync<CodeCompileServiceStartup>(options => options
                  .AddConventionalAssemblyOfService()
                  .AddHttpClient()
                  .AddBlazorWorkerJsRuntime()
@@ -90,10 +94,11 @@ namespace WasmCsTest.WorkerConnection
 
         private async Task TestJSAsync(IJSRuntime jSRuntime)
         {
-            var key = "001";
-            var module = await jSRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DbOperations.js");
-            var db = await module.InvokeAsync<IJSObjectReference>("Open");
-            await module.InvokeVoidAsync("Put", db, key, "testData", (new[] { 'v', 'a', 'l', 'u', 'e' }).Select(x => (byte)x).ToArray());
+            var service = AsyncVariableStorageService.CreateInstance(jSRuntime);
+            VariableStorageAsyncAccesser<string> accesser = await service.OpenAsync<string>("004");
+            await accesser.WriteAsync("hello");
+            Type type = jSRuntime.GetType();
+            Console.WriteLine(type.ToString()); // Microsoft.AspNetCore.Components.WebAssembly.Services.DefaultWebAssemblyJSRuntime
         }
 
         private long currentWorkableJob = 0;
@@ -155,7 +160,7 @@ namespace WasmCsTest.WorkerConnection
             runCodeJob.RunCodeStatus = RunCodeStatus.Running;
             await InvokeAllAsync(updateCallBack);
             this.runCodeJob = runCodeJob;
-            var result = await service.RunAsync(runner => runner.RunCodeAsync(runCodeJob.AssemblyId));
+            RunCodeResult result = await service.RunAsync(runner => runner.RunCodeAsync(runCodeJob.AssemblyId));
             runCodeJob.RunCodeStatus = RunCodeStatus.Completed;
             runCodeJob.RunCodeResult = result;
             await InvokeAllAsync(updateCallBack);

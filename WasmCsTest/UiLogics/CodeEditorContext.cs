@@ -1,11 +1,11 @@
 ﻿using CodeRunner;
 
-using WasmCsTest.WorkerConnection;
-
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+
+using WasmCsTest.WorkerConnection;
 
 namespace WasmCsTest.UiLogics
 {
@@ -79,13 +79,19 @@ namespace WasmCsTest.UiLogics
         /// UIを描画更新すべきときに実行される関数を追加します。
         /// </summary>
         /// <param name="func"></param>
-        public void AddUpdateUiCallBack(Func<Task> func) => updateUiCallBacks.Add(func);
+        public void AddUpdateUiCallBack(Func<Task> func)
+        {
+            updateUiCallBacks.Add(func);
+        }
 
         /// <summary>
         /// UIを描画更新すべきときに実行される関数を削除します。
         /// </summary>
         /// <param name="func"></param>
-        public void RemoveUpdateUiCallBack(Func<Task> func) => updateUiCallBacks.Remove(func);
+        public void RemoveUpdateUiCallBack(Func<Task> func)
+        {
+            updateUiCallBacks.Remove(func);
+        }
 
         /// <summary>
         /// コンパイルの状態を取得します。

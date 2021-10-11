@@ -24,7 +24,7 @@ namespace RuntimeIndexCreater
             string frameworkDirPath = null;
             if (args.Length == 1)
             {
-                var arg = args[0];
+                string arg = args[0];
                 if (Directory.Exists(arg))
                 {
                     frameworkDirPath = arg;

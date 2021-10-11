@@ -1,11 +1,11 @@
 ﻿using Microsoft.JSInterop;
 
-using WasmCsTest.WorkerConnection;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using WasmCsTest.WorkerConnection;
 
 namespace WasmCsTest.UiLogics
 {

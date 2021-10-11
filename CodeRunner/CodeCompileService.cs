@@ -1,5 +1,7 @@
 ﻿using CodeRunner.IO;
 
+using IndexedDbHandler;
+
 using Microsoft.JSInterop;
 
 using System;
@@ -8,6 +10,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeRunner
@@ -77,12 +81,8 @@ namespace CodeRunner
 
         public async Task<string> TestJS()
         {
-            var key = "001";
-            await jSRuntime.InvokeVoidAsync("importLocalScripts", "./js/DbOperationsWorker.js");
-            await jSRuntime.InvokeVoidAsync("Load");
-            await jSRuntime.InvokeVoidAsync("Open");
-            var result = await jSRuntime.InvokeAsync<string>("Read", key);
-            Console.WriteLine(result);
+            var variableStorageService = AsyncVariableStorageService.CreateInstanceFromWorker(jSRuntime);
+            VariableStorageAsyncAccesser<string> accesser = await variableStorageService.OpenAsync<string>("004");
             return null;
         }
 
@@ -104,7 +104,7 @@ namespace CodeRunner
 
         public async Task<RunCodeResult> RunCodeAsync(Guid guid)
         {
-            if (!resultDictionary.TryGetValue(guid, out var result))
+            if (!resultDictionary.TryGetValue(guid, out CompileResult result))
             {
                 return null;
             }
