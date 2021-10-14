@@ -817,6 +817,14 @@
       "url": "_content\/JSWrapper\/js\/DbOperationsWorkerNet5.js"
     },
     {
+      "hash": "sha256-ejlTs1bJHT01ErqkMgodf4UXcQ0wz51dGw5OyCJmPCs=",
+      "url": "_content\/JSWrapper\/js\/OnFetchHandler.js"
+    },
+    {
+      "hash": "sha256-3Emg5nt6nmhxJzT7FZlWdRfD883wsC6vCgcqHT\/fiZA=",
+      "url": "_content\/JSWrapper\/js\/UIMessageSender.js"
+    },
+    {
       "hash": "sha256-UGezuDfCbmOd6eVzDPl8RXMP9nhM7Joh5eiktwW8rKQ=",
       "url": "_content\/JSWrapper\/js\/WorkerConsoleReader.js"
     },
@@ -925,7 +933,7 @@
       "url": "_framework\/CodeRunner.dll"
     },
     {
-      "hash": "sha256-mTHcz\/cesGCK\/QGvRtS6hyPR48lZoeVuE4K4w4CePQQ=",
+      "hash": "sha256-zcjs2Ms9za8apKWMAfIVSF8uHpM4fjy7NhrHGl4ZnWs=",
       "url": "_framework\/JSWrapper.dll"
     },
     {
@@ -1037,7 +1045,7 @@
       "url": "_framework\/zh-Hant\/Microsoft.CodeAnalysis.CSharp.resources.dll"
     },
     {
-      "hash": "sha256-A6n+zXPAhxwBZ5EVPvhpjb45ivzHq3WhmrJzNrSMHs0=",
+      "hash": "sha256-44W92XVoVqYwu3c2qTHYnboXMbCIHxBL1iG6CW6JMlU=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -1045,5 +1053,5 @@
       "url": "_framework\/blazor.webassembly.js"
     }
   ],
-  "version": "p9TQFWAs"
+  "version": "Po8R7aiU"
 };
