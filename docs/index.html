@@ -15,6 +15,10 @@
 
     <!--code editer-->
     <link href="lib/codemirror/lib/codemirror.css" rel="stylesheet" />
+
+    <!--PWA-->
+    <link href="manifest.json" rel="manifest" />
+    <link rel="apple-touch-icon" sizes="512*512" href="icon-512.png" />
 </head>
 
 <body>
@@ -26,6 +30,9 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+
+    <!--SWA-->
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
 
     <!--syntax highlighter-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
