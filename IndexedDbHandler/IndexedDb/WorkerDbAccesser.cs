@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IndexedDbHandler
+namespace JSWrapper.IndexedDb
 {
     /// <summary>
-    /// ワーカーの <see cref="IJSRuntime"/> を介して、IndexedDB を非同期で操作する <see cref="IAsyncDbAccesser"/> の実装を提供します。
+    /// ワーカーの <see cref="IJSRuntime"/> を介して、IndexedDB を非同期で操作する <see cref="IDbAccesser"/> の実装を提供します。
     /// </summary>
-    internal class WorkerDbAccesser : IAsyncDbAccesser
+    internal class WorkerDbAccesser : IDbAccesser
     {
         private readonly IJSRuntime jSRuntime;
 
@@ -27,7 +27,7 @@ namespace IndexedDbHandler
         /// <inheritdoc />
         public async Task Open()
         {
-            await jSRuntime.InvokeVoidAsync("importLocalScripts", "./_content/IndexedDbHandler/js/DbOperationsWorkerNet5.js");
+            await jSRuntime.InvokeVoidAsync("importLocalScripts", SettingProvider.JSDirPath + "DbOperationsWorkerNet5.js");
             await jSRuntime.InvokeVoidAsync("Load");
             await jSRuntime.InvokeVoidAsync("Open");
         }

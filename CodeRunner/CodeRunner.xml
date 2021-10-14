@@ -1,0 +1,704 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CodeRunner</name>
+    </assembly>
+    <members>
+        <member name="T:CodeRunner.CodeCompileService">
+            <summary>
+            アプリケーションがユーザーコードを分離環境で実行するための、疎結合インターフェイスを提供します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.CodeCompileService.#ctor(System.Net.Http.HttpClient,Microsoft.JSInterop.IJSRuntime)">
+            <summary>
+            <see cref="T:CodeRunner.CodeCompileService"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="httpClient">有効な <see cref="T:System.Net.Http.HttpClient"/>。</param>
+            <param name="jSRuntime">有効な <see cref="T:Microsoft.JSInterop.IJSRuntime"/>。<see cref="T:Microsoft.JSInterop.IJSInProcessRuntime"/>を実装することが実際には必要です。</param>
+        </member>
+        <member name="M:CodeRunner.CodeCompileService.ApplyParentContext(System.String,System.String)">
+            <summary>
+            親ワーカーから、baseURL と現在のカルチャーを伝播させます。
+            </summary>
+            <param name="baseUrl"></param>
+            <param name="culture"></param>
+        </member>
+        <member name="P:CodeRunner.CodeCompileService.IsCompilerInitialized">
+            <summary>
+            コンパイラが初期化済みかどうかを表す値を取得します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CodeCompileService.CompilerVersionString">
+            <summary>
+            コンパイラのバージョンを表現する、カルチャ依存の文字列を取得します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.CodeCompileService.InitializeCompilerAsync">
+            <summary>
+            コンパイラを初期化します。
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CodeRunner.CodeCompileService.InitializeCompilerAwaitableAsync">
+            <summary>
+            コンパイラを初期化して、<c>null</c> を <see cref="T:System.String"/> として返します。
+            </summary>
+            <returns>常に <c>null</c> が返されます。</returns>
+            <remarks>ライブラリの制約により、戻り値が <see cref="T:System.Threading.Tasks.Task"/> 型であるメソッドを正しく待機することができないようであるため、このメソッドを利用することでコンパイラの初期化を待機することができます。</remarks>
+        </member>
+        <member name="M:CodeRunner.CodeCompileService.TestJS">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CodeRunner.CodeCompileService.CompileAsync(System.String)">
+            <summary>
+            コードをコンパイルします。
+            </summary>
+            <param name="code">コンパイルする C# コード。</param>
+            <returns></returns>
+        </member>
+        <member name="E:CodeRunner.CodeCompileService.StdOutWriteRequested">
+            <summary>
+            標準出力への書き込みが要求されたときに発生するイベント。
+            </summary>
+            <remarks>
+            このイベントをリッスンし、ユーザーの書き込んだ文字列を表示する処理を実装します。
+            </remarks>
+        </member>
+        <member name="E:CodeRunner.CodeCompileService.StdErrorWriteRequested">
+            <summary>
+            標準エラー出力への書き込みが要求されたときに発生するイベント。
+            </summary>
+            <remarks>
+            このイベントをリッスンし、ユーザーの書き込んだ文字列を表示する処理を実装します。
+            </remarks>
+        </member>
+        <member name="E:CodeRunner.CodeCompileService.StdInputReadRequested">
+            <summary>
+            標準入力の１文字分の読み取りが要求されたときに発生するイベント。
+            </summary>
+            <remarks>
+            このイベントをリッスンし、イベントの発生に応じて入力の読み取りを開始します。
+            </remarks>
+        </member>
+        <member name="E:CodeRunner.CodeCompileService.StdInputReadLineRequested">
+            <summary>
+            標準入力の１行分の読み取りが要求されたときに発生するイベント。
+            </summary>
+            <remarks>
+            このイベントをリッスンし、イベントの発生に応じて入力の読み取りを開始します。
+            </remarks>
+        </member>
+        <member name="M:CodeRunner.CodeCompileService.RunCodeAsync(System.Guid)">
+            <summary>
+            コードを実行します。
+            </summary>
+            <param name="guid">実行するアセンブリのID。</param>
+            <returns></returns>
+        </member>
+        <member name="T:CodeRunner.RunCodeResult">
+            <summary>
+            コード実行結果を表現します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.RunCodeResult.IsSuccessed">
+            <summary>
+            コード実行が成功したかどうか。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.RunCodeResult.OccurredException">
+            <summary>
+            発生した例外。例外が発生しなかった場合、<c>null</c> にできます。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.CodeCompileServiceStartup">
+            <summary>
+            <see cref="T:CodeRunner.CodeCompileService"/> の起動を簡略化します。
+            </summary>
+            <remarks>
+            BlazorWorker.Demo.IoCExample.MyIndexDBServiceStartupあたりを参考に実装したがいまいちよくわかってない
+            </remarks>
+        </member>
+        <member name="M:CodeRunner.CodeCompileServiceStartup.#ctor(System.Net.Http.HttpClient,BlazorWorker.WorkerCore.IWorkerMessageService)">
+            <summary>
+            <see cref="T:CodeRunner.CodeCompileServiceStartup"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="httpClient">有効な <see cref="T:System.Net.Http.HttpClient"/>。</param>
+            <param name="workerMessageService">親から渡される <see cref="T:BlazorWorker.WorkerCore.IWorkerMessageService"/>。</param>
+        </member>
+        <member name="M:CodeRunner.CodeCompileServiceStartup.Resolve``1">
+            <summary>
+            サービスを取得します。
+            </summary>
+            <typeparam name="T">取得するサービスの型。</typeparam>
+            <returns></returns>
+        </member>
+        <member name="M:CodeRunner.CodeCompileServiceStartup.Configure(Microsoft.Extensions.DependencyInjection.IServiceCollection)">
+            <summary>
+            <see cref="T:CodeRunner.CodeCompileService"/> を適切に設定して起動します。
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="T:CodeRunner.ServiceCollectionHelper">
+            <summary>
+            <see cref="T:Microsoft.Extensions.DependencyInjection.ServiceCollection"/> への操作を簡略化します。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.ServiceCollectionHelper.Configure">
+            <summary>
+            サービスの初期設定をするメソッドをカプセル化します。
+            </summary>
+            <param name="services"></param>
+        </member>
+        <member name="M:CodeRunner.ServiceCollectionHelper.BuildServiceProviderFromMethod(CodeRunner.ServiceCollectionHelper.Configure)">
+            <summary>
+            初期設定をするメソッドをもとに <see cref="T:System.IServiceProvider"/> を初期化します。
+            </summary>
+            <param name="configureMethod"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CodeRunner.CodeExecuter">
+            <summary>
+            コードを実行する機能を提供します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.CodeExecuter.RunCode(CodeRunner.CompileResult,System.IO.TextReader,System.IO.TextWriter,System.IO.TextWriter)">
+            <summary>
+            コードを実行します。
+            </summary>
+            <param name="compileResult">実行するコンパイル結果。</param>
+            <param name="stdIn">標準入力。</param>
+            <param name="stdOut">標準出力。</param>
+            <param name="stdError">標準エラー出力。</param>
+            <returns></returns>
+            <exception cref="T:System.ArgumentException"></exception>
+            <exception cref="T:System.InvalidOperationException"></exception>
+        </member>
+        <member name="T:CodeRunner.CodeInjection.InjectCode">
+            <summary>
+            ユーザーコードへ注入するコードを管理します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CodeInjection.InjectCode.RedirectCode">
+            <summary>
+            標準入出力をリダイレクトする注入コードを取得します。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.CodeTempletes">
+            <summary>
+            C#コードのテンプレートを提供します。
+            </summary>
+        </member>
+        <member name="F:CodeRunner.CodeTempletes.GetNowTimeSampleCode">
+            <summary>
+            現在時刻を表示するサンプルコードを取得します。
+            </summary>
+        </member>
+        <member name="F:CodeRunner.CodeTempletes.TempleteCode">
+            <summary>
+            空のMain関数を含むサンプルコードを取得します。
+            </summary>
+        </member>
+        <member name="F:CodeRunner.CodeTempletes.GetVersionCode">
+            <summary>
+            コンパイラとC#言語のバージョンを取得するコードを取得します。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.CompilerResultMessage">
+            <summary>
+            軽量でシリアル化が容易なコンパイル結果を表現します。
+            </summary>
+            <remarks>
+            コンパイルされたアセンブリの参照の代わりに、Guid を使用します。
+            </remarks>
+        </member>
+        <member name="M:CodeRunner.CompilerResultMessage.#ctor">
+            <summary>
+            <see cref="T:CodeRunner.CompilerResultMessage"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.CompilerResultMessage.#ctor(System.Boolean,System.Boolean,System.Collections.Generic.IEnumerable{CodeRunner.SimpleCompileError},System.Guid)">
+            <summary>
+            <see cref="T:CodeRunner.CompilerResultMessage"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="isSuccessed">コンパイルが成功したかどうか。</param>
+            <param name="hasMainMethod">メインメソッドが正しく検出されたかどうか。</param>
+            <param name="diagnostics">コンパイルからのメッセージ。</param>
+            <param name="compileId">コンパイルに一意に関連付けられたID。</param>
+        </member>
+        <member name="M:CodeRunner.CompilerResultMessage.FromCompileResult(CodeRunner.CompileResult,System.Guid)">
+            <summary>
+            <see cref="T:CodeRunner.CompileResult"/> クラスを元に、<see cref="T:CodeRunner.CompilerResultMessage"/> クラスの新しいインスタンスを取得します。
+            </summary>
+            <param name="compileResult"></param>
+            <param name="guid"></param>
+            <returns></returns>
+        </member>
+        <member name="P:CodeRunner.CompilerResultMessage.IsSuccessed">
+            <summary>
+            コンパイルが成功したかどうかを表す値を取得します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CompilerResultMessage.HasMainMethod">
+            <summary>
+            ただ 1 つの Main 関数を持っていたかどうかを取得します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CompilerResultMessage.Diagnostics">
+            <summary>
+            コンパイラからのメッセージを取得します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CompilerResultMessage.CompileId">
+            <summary>
+            このコンパイルに関連付けられたIDを取得します。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.CSharpCompiler">
+            <summary>
+            C#コードのコンパイルを提供します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.CSharpCompiler.#ctor(System.Net.Http.HttpClient)">
+            <summary>
+            <see cref="T:CodeRunner.CSharpCompiler"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="httpClient">有効な <see cref="T:System.Net.Http.HttpClient"/>。コンパイラがDLLを読み込むのに使用します。</param>
+        </member>
+        <member name="P:CodeRunner.CSharpCompiler.IsInitialized">
+            <summary>
+            このコンパイラが初期化されているかどうかを表す値を取得します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CSharpCompiler.VersionString">
+            <summary>
+            コンパイラとC#言語のバージョンを説明する文字列を取得します。コンパイラが初期化されていない場合、<c>null</c> が返されます。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.CSharpCompiler.InitializeAsync">
+            <summary>
+            C#コンパイラを初期化します。
+            </summary>
+            <returns></returns>
+            <remarks>
+            事前にこのメソッドを呼び出すことは、初回コンパイルのオーバーヘッドを隠蔽するのに役立ちます。
+            </remarks>
+        </member>
+        <member name="M:CodeRunner.CSharpCompiler.CompileAsync(System.String)">
+            <summary>
+            C#コードをコンパイルします。
+            </summary>
+            <param name="code">コンパイルするC#コード</param>
+            <returns></returns>
+        </member>
+        <member name="T:CodeRunner.CompileResult">
+            <summary>
+            コンパイル結果を表現します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.CompileResult.#ctor(System.Boolean,System.Collections.Generic.IEnumerable{Microsoft.CodeAnalysis.Diagnostic},System.Reflection.Assembly,System.Reflection.MethodInfo)">
+            <summary>
+            <see cref="T:CodeRunner.CompileResult"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="isSuccessed">コンパイルが成功したかどうか。</param>
+            <param name="diagnostics">コンパイラからのメッセージ。</param>
+            <param name="assembly">コンパイルの結果得られたアセンブリ。コンパイルが失敗した場合、<c>null</c> にできます。</param>
+            <param name="mainMethod">アプリケーションの <c>Main</c> メソッド。コンパイルが失敗した場合、<c>null</c> にできます。</param>
+        </member>
+        <member name="P:CodeRunner.CompileResult.IsSuccessed">
+            <summary>
+            コンパイルが成功したかどうかを表す値を取得します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CompileResult.Diagnostics">
+            <summary>
+            コンパイラからのメッセージを取得します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CompileResult.Assembly">
+            <summary>
+            コンパイルの結果得られたアセンブリを取得します。コンパイルが成功しなかった場合、<c>null</c> が返されます。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.CompileResult.MainMethod">
+            <summary>
+            アプリケーションの <c>Main</c> メソッドを取得します。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.DllLoader.DllInfoProvider">
+            <summary>
+            .NETランタイムを含む、このアプリケーションを構成するDLLファイルの情報を提供します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.DllLoader.DllInfoProvider.GetDllNames(System.Net.Http.HttpClient,System.Globalization.CultureInfo)">
+            <summary>
+            必要なDLLファイルのファイル名を取得します。
+            </summary>
+            <param name="httpClient">有効な <see cref="T:System.Net.Http.HttpClient"/>。</param>
+            <param name="cultureInfo">取得するDLLのカルチャ。</param>
+            <returns></returns>
+            <exception cref="T:System.InvalidOperationException" />
+        </member>
+        <member name="M:CodeRunner.DllLoader.DllInfoProvider.GetDllPaths(System.Net.Http.HttpClient,System.Globalization.CultureInfo)">
+            <summary>
+            必要なDLLファイルのパスを取得します。
+            </summary>
+            <param name="httpClient">有効な <see cref="T:System.Net.Http.HttpClient"/>。</param>
+            <param name="cultureInfo">取得するDLLのカルチャ。</param>
+            <returns></returns>
+            <exception cref="T:System.InvalidOperationException" />
+        </member>
+        <member name="T:CodeRunner.DllLoader.DllLoadInfoSet">
+            <summary>
+            一つのディレクトリに含まれるDLLの読み込み情報を表現します。
+            </summary>
+        </member>
+        <member name="F:CodeRunner.DllLoader.DllLoadInfoSet.DirRelativePath">
+            <summary>
+            wwwrootからDLLがあるディレクトリへのパス。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.DllLoader.DllLoadInfoSet.#ctor(CodeRunner.DllLoader.DllLoadInfo[])">
+            <summary>
+            <see cref="T:CodeRunner.DllLoader.DllLoadInfoSet"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="dllLoadInfos"></param>
+        </member>
+        <member name="P:CodeRunner.DllLoader.DllLoadInfoSet.DllLoadInfos">
+            <summary>
+            このセットに含まれる <see cref="T:CodeRunner.DllLoader.DllLoadInfo"/> を取得します。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.DllLoader.DllLoadInfo">
+            <summary>
+            DLLの読み込み情報を表現します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.DllLoader.DllLoadInfo.#ctor(System.String,System.String)">
+            <summary>
+            <see cref="T:CodeRunner.DllLoader.DllLoadInfo"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="name"></param>
+            <param name="cultureString"></param>
+        </member>
+        <member name="P:CodeRunner.DllLoader.DllLoadInfo.Name">
+            <summary>
+            このDLLのファイル名を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.DllLoader.DllLoadInfo.CultureString">
+            <summary>
+            このDLLが依存するカルチャの名前を取得または設定します。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.DllLoader.NetworkAssemblyLoader">
+            <summary>
+            ネットワーク経由でアセンブリを読み込みます。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.DllLoader.NetworkAssemblyLoader.#ctor(System.Net.Http.HttpClient)">
+            <summary>
+            <see cref="T:CodeRunner.DllLoader.NetworkAssemblyLoader"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="httpClient">有効な <see cref="T:System.Net.Http.HttpClient"/>。</param>
+        </member>
+        <member name="M:CodeRunner.DllLoader.NetworkAssemblyLoader.LoadAsync">
+            <summary>
+            アセンブリをロードします。
+            </summary>
+            <returns>ロードしたアセンブリから得た型情報。</returns>
+        </member>
+        <member name="T:CodeRunner.ErrorTypes">
+            <summary>
+            コンパイラメッセージの種類を表現します。
+            </summary>
+        </member>
+        <member name="F:CodeRunner.ErrorTypes.Hidden">
+            <summary>
+            Hidden(非表示)レベル。
+            </summary>
+        </member>
+        <member name="F:CodeRunner.ErrorTypes.Info">
+            <summary>
+            Info(メッセージ)レベル。
+            </summary>
+        </member>
+        <member name="F:CodeRunner.ErrorTypes.Warning">
+            <summary>
+            Warning(警告)レベル。
+            </summary>
+        </member>
+        <member name="F:CodeRunner.ErrorTypes.Error">
+            <summary>
+            Error(エラー)レベル。
+            </summary>
+        </member>
+        <member name="T:CodeRunner.IO.EventTextWriter">
+            <summary>
+            イベントを用いて間接的にテキスト書き込みを行う <see cref="T:System.IO.TextWriter"/> を表現します。
+            このクラスは継承できません。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.IO.EventTextWriter.#ctor(System.EventHandler{System.String})">
+            <summary>
+            <see cref="T:CodeRunner.IO.EventTextWriter"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="eventHandler">初期値として登録するイベント。</param>
+        </member>
+        <member name="E:CodeRunner.IO.EventTextWriter.WriteRequested">
+            <summary>
+            書き込みが要求されたときに発生するイベント。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.IO.EventTextWriter.WriteString(System.String)">
+            <summary>
+            イベントを発生させ、文字列の書き込みを要求します。
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="T:CodeRunner.IO.SimpleTextWriter">
+            <summary>
+            <see cref="T:System.IO.TextWriter"/> の実装を簡略化します。<see cref="M:CodeRunner.IO.SimpleTextWriter.WriteString(System.String)"/> を実装するだけで利用できます。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.IO.SimpleTextWriter.Encoding">
+            <inheritdoc />
+        </member>
+        <member name="P:CodeRunner.IO.SimpleTextWriter.NewLine">
+            <inheritdoc />
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteString(System.String)">
+            <summary>
+            派生クラスでオーバーライドされた場合は、文字列を書き込みます。
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteGeneric``1(``0)">
+            <summary>
+            値を書き込みます。
+            </summary>
+            <typeparam name="T">書き込む値の型。</typeparam>
+            <param name="value">書き込む値。</param>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLineGeneric``1(``0)">
+            <summary>
+            値を書き込み、続いて改行文字を書き込みます。
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="value"></param>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Char)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Char[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Char[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Decimal)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Double)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Single)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.ReadOnlySpan{System.Char})">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.String,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.String,System.Object,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.String,System.Object,System.Object,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.Text.StringBuilder)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.UInt32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.Write(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Boolean)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Char)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Char[],System.Int32,System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Char[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Decimal)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Double)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Single)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Int32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Int64)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.ReadOnlySpan{System.Char})">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.String,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.String,System.Object,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.String,System.Object,System.Object,System.Object)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.String,System.Object[])">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.String)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.Text.StringBuilder)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.UInt32)">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.IO.SimpleTextWriter.WriteLine(System.UInt64)">
+            <inheritdoc/>
+        </member>
+        <member name="T:CodeRunner.IO.WorkerTextReader">
+            <summary>
+            ワーカーが UI と同期通信することで入力を得る <see cref="T:System.IO.TextReader"/> を表現します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.IO.WorkerTextReader.#ctor(System.EventHandler,System.EventHandler)">
+            <summary>
+            <see cref="T:CodeRunner.IO.WorkerTextReader"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="onReadRequested"></param>
+            <param name="onReadLineRequested"></param>
+        </member>
+        <member name="E:CodeRunner.IO.WorkerTextReader.OnReadRequested">
+            <summary>
+            一文字分の読み取りが要求されたときに発生するイベント。
+            </summary>
+        </member>
+        <member name="E:CodeRunner.IO.WorkerTextReader.OnReadLineRequested">
+            <summary>
+            一行分の読み取りが要求されたときに発生するイベント。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.IO.WorkerTextReader.Read">
+            <inheritdoc />
+        </member>
+        <member name="M:CodeRunner.IO.WorkerTextReader.ReadLine">
+            <inheritdoc />
+        </member>
+        <member name="T:CodeRunner.SimpleCompileError">
+            <summary>
+            軽量でシリアル化が容易な、コンパイルエラーを表現します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.SimpleCompileError.#ctor">
+            <summary>
+            <see cref="T:CodeRunner.SimpleCompileError"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.SimpleCompileError.#ctor(System.String,System.Int32,System.Int32,CodeRunner.ErrorTypes,System.String,System.String)">
+            <summary>
+            <see cref="T:CodeRunner.SimpleCompileError"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="sourcePath">コンパイルしたソースコードのパス。</param>
+            <param name="line">メッセージと関連するコード行。</param>
+            <param name="character">メッセージと関連するコード列。</param>
+            <param name="errorType">メッセージの種類。</param>
+            <param name="errorId">メッセージのID。CSXXXXなど。</param>
+            <param name="errorMessage">メッセージの内容。</param>
+        </member>
+        <member name="P:CodeRunner.SimpleCompileError.SourcePath">
+            <summary>
+            コンパイルしたソースコードのパスを取得または設定します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.SimpleCompileError.Line">
+            <summary>
+            このメッセージに関連付けられたソースコードの行を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.SimpleCompileError.Character">
+            <summary>
+            このメッセージに関連付けられたソースコードの列を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.SimpleCompileError.ErrorType">
+            <summary>
+            このメッセージの種類を取得または設定します。
+            </summary>
+        </member>
+        <member name="P:CodeRunner.SimpleCompileError.ErrorId">
+            <summary>
+            このメッセージのIDを取得または設定します。
+            </summary>
+            <example>CSXXXXなど。</example>
+        </member>
+        <member name="P:CodeRunner.SimpleCompileError.ErrorMessage">
+            <summary>
+            メッセージを取得または設定します。
+            </summary>
+        </member>
+        <member name="M:CodeRunner.SimpleCompileError.ToString">
+            <inheritdoc/>
+        </member>
+        <member name="M:CodeRunner.SimpleCompileError.FromDiagnostic(Microsoft.CodeAnalysis.Diagnostic,System.IFormatProvider)">
+            <summary>
+            <see cref="T:Microsoft.CodeAnalysis.Diagnostic"/> をもとに <see cref="T:CodeRunner.SimpleCompileError"/> クラスの新しいインスタンスを初期化して取得します。
+            </summary>
+            <param name="diagnostic"></param>
+            <param name="formatter">この引数は現在使用されていません。</param>
+            <returns></returns>
+            <remarks>
+            このコードは、<see cref="M:Microsoft.CodeAnalysis.Diagnostic.ToString"/> の実装を引用しています。
+            </remarks>
+        </member>
+    </members>
+</doc>

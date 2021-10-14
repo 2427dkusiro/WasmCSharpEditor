@@ -11,8 +11,16 @@ using WasmCsTest.WorkerConnection;
 
 namespace WasmCsTest
 {
+    /// <summary>
+    /// Webアプリケーションのエントリポイントが格納されたクラスです。
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Webアプリケーションのエントリポイントです。
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);

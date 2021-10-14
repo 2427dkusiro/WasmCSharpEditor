@@ -23,8 +23,8 @@ namespace CodeRunner
     internal class CSharpCompiler
     {
         private readonly NetworkAssemblyLoader networkAssemblyLoader;
-        private static MetadataReference[] metadataReferences;
-        private static SyntaxTree injectCode;
+        private static MetadataReference[]? metadataReferences;
+        private static SyntaxTree? injectCode;
 
         private readonly CSharpParseOptions csharpLangVersion = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.CSharp9);
 
@@ -32,7 +32,6 @@ namespace CodeRunner
         /// <see cref="CSharpCompiler"/> クラスの新しいインスタンスを初期化します。
         /// </summary>
         /// <param name="httpClient">有効な <see cref="HttpClient"/>。コンパイラがDLLを読み込むのに使用します。</param>
-        /// <param name="indexPath">DLLが定義されたjsonファイルへのパス。</param>
         public CSharpCompiler(HttpClient httpClient)
         {
             networkAssemblyLoader = new NetworkAssemblyLoader(httpClient);
@@ -46,7 +45,7 @@ namespace CodeRunner
         /// <summary>
         /// コンパイラとC#言語のバージョンを説明する文字列を取得します。コンパイラが初期化されていない場合、<c>null</c> が返されます。
         /// </summary>
-        public string VersionString { get; private set; }
+        public string? VersionString { get; private set; }
 
         private readonly object initializeSyncObject = new();
         private bool isInitializing;
@@ -75,7 +74,7 @@ namespace CodeRunner
 
             if (injectCode is null)
             {
-                injectCode = CSharpSyntaxTree.ParseText(InjectCode.Code, csharpLangVersion);
+                injectCode = CSharpSyntaxTree.ParseText(InjectCode.RedirectCode, csharpLangVersion);
             }
             if (metadataReferences is null)
             {
@@ -85,16 +84,12 @@ namespace CodeRunner
 
             IsInitialized = true;
 
-            Diagnostic versionInfo = result.Diagnostics?.FirstOrDefault(d => d.Id == "CS8304");
+            Diagnostic? versionInfo = result.Diagnostics?.FirstOrDefault(d => d.Id == "CS8304");
             if (versionInfo is null)
             {
                 return;
             }
             string message = versionInfo.GetMessage();
-            if (message is null)
-            {
-                return;
-            }
             VersionString = message;
         }
 
@@ -151,6 +146,11 @@ namespace CodeRunner
 
         private async Task<CompileResult> CompileAsync(SyntaxTree syntaxTree, bool skipInitialize = false)
         {
+            if (metadataReferences is null || injectCode is null)
+            {
+                throw new InvalidOperationException("まず初期化処理を行ってからコンパイルを実行する必要があります。");
+            }
+
             if (!skipInitialize)
             {
                 await EnsureInitialized();
@@ -158,7 +158,7 @@ namespace CodeRunner
             var compileOption = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
             var compile = CSharpCompilation.Create("__HogeAssembly", new[] { syntaxTree, injectCode }, metadataReferences, compileOption);
 
-            Microsoft.CodeAnalysis.Emit.EmitResult emitResult = default;
+            Microsoft.CodeAnalysis.Emit.EmitResult? emitResult = default;
             var memoryStream = new MemoryStream();
             try
             {
@@ -179,11 +179,11 @@ namespace CodeRunner
                     }
                 }
 
-                if (emitResult.Success)
+                if (emitResult?.Success ?? false)
                 {
                     memoryStream.Seek(0, SeekOrigin.Begin);
                     Assembly asm = AssemblyLoadContext.Default.LoadFromStream(memoryStream);
-                    if (TryGetMainMethod(asm, out MethodInfo methodInfo))
+                    if (TryGetMainMethod(asm, out MethodInfo? methodInfo))
                     {
                         return new CompileResult(true, emitResult.Diagnostics, asm, methodInfo);
                     }
@@ -192,7 +192,7 @@ namespace CodeRunner
                         return new CompileResult(false, emitResult.Diagnostics, asm, null);
                     }
                 }
-                return new CompileResult(false, emitResult.Diagnostics, null, null);
+                return new CompileResult(false, emitResult?.Diagnostics, null, null);
             }
             finally
             {
@@ -201,10 +201,10 @@ namespace CodeRunner
         }
 
 
-        private static bool TryGetMainMethod(Assembly asm, out MethodInfo methodInfo)
+        private static bool TryGetMainMethod(Assembly asm, out MethodInfo? methodInfo)
         {
-            MethodInfo[] mainMethod = asm.GetTypes().Select(x => new[] { x.GetMethod("Main", BindingFlags.NonPublic | BindingFlags.Static), x.GetMethod("Main", BindingFlags.Public | BindingFlags.Static) }).SelectMany(x => x).Where(x => x is not null).ToArray();
-            if (mainMethod.Length != 1)
+            MethodInfo[]? mainMethod = asm.GetTypes().Select(x => new[] { x.GetMethod("Main", BindingFlags.NonPublic | BindingFlags.Static), x.GetMethod("Main", BindingFlags.Public | BindingFlags.Static) }).SelectMany(x => x).Where(x => x is not null).ToArray()!;
+            if (mainMethod?.Length != 1)
             {
                 methodInfo = null;
                 return false;
@@ -228,13 +228,23 @@ namespace CodeRunner
         /// <param name="isSuccessed">コンパイルが成功したかどうか。</param>
         /// <param name="diagnostics">コンパイラからのメッセージ。</param>
         /// <param name="assembly">コンパイルの結果得られたアセンブリ。コンパイルが失敗した場合、<c>null</c> にできます。</param>
-        /// <param name="mainMethod">アプリケーションの <c>Main</c> メソッド。</param>
-        public CompileResult(bool isSuccessed, IEnumerable<Diagnostic> diagnostics, Assembly assembly, MethodInfo mainMethod)
+        /// <param name="mainMethod">アプリケーションの <c>Main</c> メソッド。コンパイルが失敗した場合、<c>null</c> にできます。</param>
+        public CompileResult(bool isSuccessed, IEnumerable<Diagnostic>? diagnostics, Assembly? assembly, MethodInfo? mainMethod)
         {
-            IsSuccessed = isSuccessed;
-            Diagnostics = diagnostics;
-            Assembly = assembly;
-            MainMethod = mainMethod;
+            if (isSuccessed)
+            {
+                IsSuccessed = isSuccessed;
+                Diagnostics = diagnostics;
+                Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+                MainMethod = mainMethod ?? throw new ArgumentNullException(nameof(mainMethod));
+            }
+            else
+            {
+                IsSuccessed = isSuccessed;
+                Diagnostics = diagnostics;
+                Assembly = assembly;
+                MainMethod = mainMethod;
+            }
         }
 
         /// <summary>
@@ -245,16 +255,16 @@ namespace CodeRunner
         /// <summary>
         /// コンパイラからのメッセージを取得します。
         /// </summary>
-        public IEnumerable<Diagnostic> Diagnostics { get; }
+        public IEnumerable<Diagnostic>? Diagnostics { get; }
 
         /// <summary>
         /// コンパイルの結果得られたアセンブリを取得します。コンパイルが成功しなかった場合、<c>null</c> が返されます。
         /// </summary>
-        public Assembly Assembly { get; }
+        public Assembly? Assembly { get; }
 
         /// <summary>
         /// アプリケーションの <c>Main</c> メソッドを取得します。
         /// </summary>
-        public MethodInfo MainMethod { get; }
+        public MethodInfo? MainMethod { get; }
     }
 }

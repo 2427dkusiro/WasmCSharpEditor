@@ -15,7 +15,7 @@ namespace WasmCsTest.UiLogics
     public class CodeMirrorWrapper
     {
         private Guid guid;
-        private IJSObjectReference module;
+        private IJSObjectReference? module;
 
         /// <summary>
         /// コードが変更されたときに発生するイベント。
@@ -54,6 +54,10 @@ namespace WasmCsTest.UiLogics
 
         private async Task InitializeEvent()
         {
+            if (module is null)
+            {
+                throw new InvalidOperationException("モジュールがインポートされていません。");
+            }
             await module.InvokeVoidAsync("EnableEventRaising", guid.ToString());
         }
 
@@ -64,6 +68,10 @@ namespace WasmCsTest.UiLogics
         /// <returns></returns>
         public async Task SetToTextArea(string textAreaId)
         {
+            if (module is null)
+            {
+                throw new InvalidOperationException("モジュールがインポートされていません。");
+            }
             await module.InvokeVoidAsync("InitializeCodeEditor", textAreaId);
         }
 
@@ -73,6 +81,10 @@ namespace WasmCsTest.UiLogics
         /// <returns></returns>
         public async Task<string> GetCodeText()
         {
+            if (module is null)
+            {
+                throw new InvalidOperationException("モジュールがインポートされていません。");
+            }
             return await module.InvokeAsync<string>("Save", Array.Empty<object>());
         }
     }

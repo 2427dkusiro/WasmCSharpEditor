@@ -15,13 +15,8 @@ namespace CodeRunner.IO
         /// <summary>
         /// <see cref="EventTextWriter"/> クラスの新しいインスタンスを初期化します。
         /// </summary>
-        public EventTextWriter() { }
-
-        /// <summary>
-        /// <see cref="EventTextWriter"/> クラスの新しいインスタンスを初期化します。
-        /// </summary>
         /// <param name="eventHandler">初期値として登録するイベント。</param>
-        public EventTextWriter(EventHandler<string> eventHandler)
+        public EventTextWriter(EventHandler<string?> eventHandler)
         {
             WriteRequested += eventHandler;
         }
@@ -29,13 +24,13 @@ namespace CodeRunner.IO
         /// <summary>
         /// 書き込みが要求されたときに発生するイベント。
         /// </summary>
-        public event EventHandler<string> WriteRequested;
+        public event EventHandler<string?> WriteRequested;
 
         /// <summary>
         /// イベントを発生させ、文字列の書き込みを要求します。
         /// </summary>
         /// <param name="value"></param>
-        public override void WriteString(string value)
+        public override void WriteString(string? value)
         {
             WriteRequested?.Invoke(this, value);
         }

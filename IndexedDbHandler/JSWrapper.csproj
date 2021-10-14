@@ -18,11 +18,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.10" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.11" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="wwwroot\js\*.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\js\OnFetchHandler.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="wwwroot\js\WorkerConsoleReader.js" />
   </ItemGroup>
 
 </Project>

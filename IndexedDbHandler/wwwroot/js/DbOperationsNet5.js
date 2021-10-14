@@ -2,6 +2,15 @@
 
 const dbName = "wasmCsEdit";
 
+let temp;
+export function BeginRead(db, _key) {
+    db.vardata.get(_key).then(result => temp = _EncodeBase64(result.data));
+}
+
+export function EndRead() {
+    return temp;
+}
+
 export function Open() {
     const db = new Dexie(dbName);
     db.version(1).stores({

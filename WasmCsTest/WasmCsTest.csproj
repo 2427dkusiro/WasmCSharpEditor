@@ -2,10 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+    <Nullable>Enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>C:\Users\Kota\source\repos\WasmCsTest\WasmCsTest\WasmCsTest.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Remove="wwwroot\.gitattributes" />
+    <Content Remove="wwwroot\service-worker.js" />
   </ItemGroup>
   
   <ItemGroup>
@@ -15,11 +22,12 @@
     <None Include="wwwroot\.nojekyll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="wwwroot\service-worker.js" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.10" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.10" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.11" PrivateAssets="all" />
     <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
     <PackageReference Include="Tewr.BlazorWorker.BackgroundService" Version="3.0.0" />
     <PackageReference Include="Tewr.BlazorWorker.Extensions.JSRuntime" Version="1.0.1-preview" />
@@ -27,6 +35,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CodeRunner\CodeRunner.csproj" />
-    <ProjectReference Include="..\IndexedDbHandler\IndexedDbHandler.csproj" />
+    <ProjectReference Include="..\IndexedDbHandler\JSWrapper.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
 </Project>

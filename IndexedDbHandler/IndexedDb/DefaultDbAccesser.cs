@@ -1,27 +1,24 @@
 ﻿using Microsoft.JSInterop;
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace IndexedDbHandler
+namespace JSWrapper.IndexedDb
 {
     /// <summary>
-    /// 標準の <see cref="IJSRuntime"/> を介して、IndexedDB を非同期で操作する <see cref="IAsyncDbAccesser"/> の実装を提供します。
+    /// 標準の <see cref="IJSRuntime"/> を介して、IndexedDB を非同期で操作する <see cref="IDbAccesser"/> の実装を提供します。
     /// </summary>
-    internal class DefaultAsyncDbAccesser : IAsyncDbAccesser
+    internal class DefaultDbAccesser : IDbAccesser
     {
         private readonly IJSRuntime jSRuntime;
         private IJSObjectReference module;
         private IJSObjectReference db;
 
         /// <summary>
-        /// <see cref="DefaultAsyncDbAccesser"/> クラスの新しいインスタンスを初期化します。
+        /// <see cref="DefaultDbAccesser"/> クラスの新しいインスタンスを初期化します。
         /// </summary>
         /// <param name="jSRuntime"></param>
-        public DefaultAsyncDbAccesser(IJSRuntime jSRuntime)
+        public DefaultDbAccesser(IJSRuntime jSRuntime)
         {
             this.jSRuntime = jSRuntime ?? throw new ArgumentNullException(nameof(jSRuntime));
         }
@@ -29,7 +26,7 @@ namespace IndexedDbHandler
         /// <inheritdoc/>
         public async Task Open()
         {
-            module = await jSRuntime.InvokeAsync<IJSObjectReference>("import", "./_content/IndexedDbHandler/js/DbOperationsNet5.js");
+            module = await jSRuntime.InvokeAsync<IJSObjectReference>("import", SettingProvider.JSDirPath + "DbOperationsNet5.js");
             db = await module.InvokeAsync<IJSObjectReference>("Open");
         }
 

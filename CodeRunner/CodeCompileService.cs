@@ -1,17 +1,15 @@
 ﻿using CodeRunner.IO;
 
-using IndexedDbHandler;
+using JSWrapper.WorkerConsoleConnection;
 
 using Microsoft.JSInterop;
 
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CodeRunner
@@ -25,12 +23,13 @@ namespace CodeRunner
         private readonly HttpClient httpClient;
         private readonly IJSRuntime jSRuntime;
 
-        private readonly Dictionary<Guid, CompileResult> resultDictionary = new Dictionary<Guid, CompileResult>();
+        private readonly Dictionary<Guid, CompileResult> resultDictionary = new();
 
         /// <summary>
         /// <see cref="CodeCompileService"/> クラスの新しいインスタンスを初期化します。
         /// </summary>
         /// <param name="httpClient">有効な <see cref="HttpClient"/>。</param>
+        /// <param name="jSRuntime">有効な <see cref="IJSRuntime"/>。<see cref="IJSInProcessRuntime"/>を実装することが実際には必要です。</param>
         public CodeCompileService(HttpClient httpClient, IJSRuntime jSRuntime)
         {
             this.httpClient = httpClient;
@@ -57,7 +56,7 @@ namespace CodeRunner
         /// <summary>
         /// コンパイラのバージョンを表現する、カルチャ依存の文字列を取得します。
         /// </summary>
-        public string CompilerVersionString => cSharpCompiler.VersionString;
+        public string? CompilerVersionString => cSharpCompiler.VersionString;
 
         /// <summary>
         /// コンパイラを初期化します。
@@ -73,16 +72,21 @@ namespace CodeRunner
         /// </summary>
         /// <returns>常に <c>null</c> が返されます。</returns>
         /// <remarks>ライブラリの制約により、戻り値が <see cref="Task"/> 型であるメソッドを正しく待機することができないようであるため、このメソッドを利用することでコンパイラの初期化を待機することができます。</remarks>
-        public async Task<string> InitializeCompilerAwaitableAsync()
+        public async Task<string?> InitializeCompilerAwaitableAsync()
         {
             await InitializeCompilerAsync();
             return null;
         }
 
-        public async Task<string> TestJS()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public async Task<string?> TestJS()
         {
-            var variableStorageService = AsyncVariableStorageService.CreateInstanceFromWorker(jSRuntime);
-            VariableStorageAsyncAccesser<string> accesser = await variableStorageService.OpenAsync<string>("004");
+            var workerConsoleReader = new WorkerConsoleReader(jSRuntime as IJSInProcessRuntime);
+            await workerConsoleReader.InitializeAsync(httpClient.BaseAddress?.AbsoluteUri ?? throw new Exception());
+            workerConsoleReader.ReadInput();
             return null;
         }
 
@@ -99,25 +103,61 @@ namespace CodeRunner
             return CompilerResultMessage.FromCompileResult(result, guid);
         }
 
-        public event EventHandler<string> StdOutWrited;
-        public event EventHandler<string> StdErrorWrited;
+        /// <summary>
+        /// 標準出力への書き込みが要求されたときに発生するイベント。
+        /// </summary>
+        /// <remarks>
+        /// このイベントをリッスンし、ユーザーの書き込んだ文字列を表示する処理を実装します。
+        /// </remarks>
+        public event EventHandler<string?>? StdOutWriteRequested;
 
-        public async Task<RunCodeResult> RunCodeAsync(Guid guid)
+        /// <summary>
+        /// 標準エラー出力への書き込みが要求されたときに発生するイベント。
+        /// </summary>
+        /// <remarks>
+        /// このイベントをリッスンし、ユーザーの書き込んだ文字列を表示する処理を実装します。
+        /// </remarks>
+        public event EventHandler<string?>? StdErrorWriteRequested;
+
+        /// <summary>
+        /// 標準入力の１文字分の読み取りが要求されたときに発生するイベント。
+        /// </summary>
+        /// <remarks>
+        /// このイベントをリッスンし、イベントの発生に応じて入力の読み取りを開始します。
+        /// </remarks>
+        public event EventHandler<int>? StdInputReadRequested;
+
+        /// <summary>
+        /// 標準入力の１行分の読み取りが要求されたときに発生するイベント。
+        /// </summary>
+        /// <remarks>
+        /// このイベントをリッスンし、イベントの発生に応じて入力の読み取りを開始します。
+        /// </remarks>
+        public event EventHandler<int>? StdInputReadLineRequested;
+
+        /// <summary>
+        /// コードを実行します。
+        /// </summary>
+        /// <param name="guid">実行するアセンブリのID。</param>
+        /// <returns></returns>
+        public RunCodeResult RunCodeAsync(Guid guid)
         {
-            if (!resultDictionary.TryGetValue(guid, out CompileResult result))
+            if (!resultDictionary.TryGetValue(guid, out CompileResult? result))
             {
-                return null;
+                throw new ArgumentException("指定されたアセンブリが見つかりません", nameof(guid));
             }
 
-            var stdOut = new EventTextWriter((object sender, string str) => StdOutWrited?.Invoke(sender, str));
-            var stdError = new EventTextWriter((object sender, string str) => StdErrorWrited?.Invoke(sender, str));
+            var stdOut = new EventTextWriter((object? sender, string? str) => StdOutWriteRequested?.Invoke(sender, str));
+            var stdError = new EventTextWriter((object? sender, string? str) => StdErrorWriteRequested?.Invoke(sender, str));
+            var stdIn = new WorkerTextReader((object? sender, EventArgs e) => StdInputReadRequested?.Invoke(sender, 0), (object? sender, EventArgs e) => StdInputReadLineRequested?.Invoke(sender, 0));
 
-            var stdIn = new StreamReader(new MemoryStream()); //仮実装
-
-            return await CodeExecuter.RunCode(result, stdIn, stdOut, stdError);
+            return CodeExecuter.RunCode(result, stdIn, stdOut, stdError);
         }
     }
 
+    /// <summary>
+    /// コード実行結果を表現します。
+    /// </summary>
     public class RunCodeResult
     {
         /// <summary>
@@ -126,8 +166,8 @@ namespace CodeRunner
         public bool IsSuccessed { get; set; }
 
         /// <summary>
-        /// 発生した例外。
+        /// 発生した例外。例外が発生しなかった場合、<c>null</c> にできます。
         /// </summary>
-        public Exception OccurredException { get; set; }
+        public Exception? OccurredException { get; set; }
     }
 }

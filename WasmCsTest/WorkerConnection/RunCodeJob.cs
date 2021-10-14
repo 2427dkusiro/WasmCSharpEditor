@@ -25,22 +25,32 @@ namespace WasmCsTest.WorkerConnection
         /// <summary>
         /// 標準出力への書き込みが要求されたときに実行される関数を取得または設定します。
         /// </summary>
-        public Action<string> WriteStdOutCallBack { get; set; }
+        public Action<string?>? WriteStdOutCallBack { get; set; }
 
         /// <summary>
         /// 標準エラー出力への書き込みが要求されたときに実行される関数を取得または設定します。
         /// </summary>
-        public Action<string> WriteStdErrorCallBack { get; set; }
+        public Action<string?>? WriteStdErrorCallBack { get; set; }
+
+        /// <summary>
+        /// 標準入力の一文字分読み取りが要求されたときに実行される関数を取得または設定します。
+        /// </summary>
+        public Action? StdInputReadCallBack { get; set; }
+
+        /// <summary>
+        /// 標準入力の一行分読み取りが要求されたときに実行される関数を取得または設定します。
+        /// </summary>
+        public Action? StdInputReadLineCallBack { get; set; }
 
         /// <summary>
         /// コードの実行結果を取得または設定します。
         /// </summary>
-        public RunCodeResult RunCodeResult { get; set; }
+        public RunCodeResult? RunCodeResult { get; set; }
 
         /// <summary>
         /// コード実行の進捗を取得または設定します。
         /// </summary>
-        public RunCodeStatus RunCodeStatus { get; set; }
+        public RunCodeStatus? RunCodeStatus { get; set; }
     }
 
     /// <summary>

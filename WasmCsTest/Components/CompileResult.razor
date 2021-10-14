@@ -10,39 +10,50 @@
 <h4>実行結果</h4>
 
 <div>
-    @switch (CodeEditorContext.CompileState)
-    {
-        case CompileStatus.Default:
-            <span class="compileResult ">コードはまだ一度も実行されていません。</span>
-            break;
-        case CompileStatus.CompileWaiting:
-            <span class="compileResult ">実行の順番待ちをしています。</span>
-            break;
-        case CompileStatus.Compiling:
-            <span class="compileResult ">コンパイルしています。</span>
-            break;
-        case CompileStatus.Completed:
-            @if (CodeEditorContext.CompileResult.IsSuccessed)
-            {
-                <span class="compileResult text-success">✔コンパイル成功</span>
-                <span>@GetTimeString</span>}
-            else
-            {
-                <span class="compileResult text-danger">❌コンパイル失敗</span>
-                <span>@GetTimeString</span>
-                <ul>
-                    @foreach (var d in CodeEditorContext.CompileResult.Diagnostics)
-                    {
-                        <li>@d.ToString()</li>
-                    }
-                </ul>
-            }
-            break;
+    @{
+        var state = CodeEditorContext?.CompileState;
+        switch (state)
+        {
+            case CompileStatus.Default:
+                <span class="compileResult ">コードはまだ一度も実行されていません。</span>
+                break;
+            case CompileStatus.CompileWaiting:
+                <span class="compileResult ">実行の順番待ちをしています。</span>
+                break;
+            case CompileStatus.Compiling:
+                <span class="compileResult ">コンパイルしています。</span>
+                break;
+            case CompileStatus.Completed:
+                if (CodeEditorContext is null)
+                {
+                    throw new InvalidOperationException();
+                }
+                if (CodeEditorContext.CompileResult is null)
+                {
+                    return;
+                }
+                @if (CodeEditorContext.CompileResult.IsSuccessed)
+                {
+                    <span class="compileResult text-success">✔コンパイル成功</span>
+                    <span>@GetTimeString</span>}
+                else
+                {
+                    <span class="compileResult text-danger">❌コンパイル失敗</span>
+                    <span>@GetTimeString</span>
+                    <ul>
+                        @foreach (var d in CodeEditorContext.CompileResult.Diagnostics ?? Array.Empty<CodeRunner.SimpleCompileError>())
+                        {
+                            <li>@d.ToString()</li>
+                        }
+                    </ul>
+                }
+                break;
+        }
     }
 </div>
 
 <div>
-    @if ((CodeEditorContext.CompileResult?.IsSuccessed ?? false) && CodeEditorContext.RunCodeResult != null)
+    @if ((CodeEditorContext?.CompileResult?.IsSuccessed ?? false) && CodeEditorContext.RunCodeResult != null)
     {
         if (CodeEditorContext.RunCodeResult.IsSuccessed)
         {
@@ -61,13 +72,13 @@
 
 @code {
     [Parameter]
-    public CodeEditorContext CodeEditorContext { get; set; }
+    public CodeEditorContext? CodeEditorContext { get; set; }
 
-    private string GetTimeString { get => $"{CodeEditorContext.CompileTime.TotalMilliseconds}ms"; }
+    private string GetTimeString { get => CodeEditorContext is null || CodeEditorContext.CompileTime is null ? "" : $"{((TimeSpan)CodeEditorContext.CompileTime).TotalMilliseconds}ms"; }
 
     protected override void OnInitialized()
     {
-        CodeEditorContext.AddUpdateUiCallBack(async () =>
+        CodeEditorContext?.AddUpdateUiCallBack(async () =>
         {
             StateHasChanged();
             await Task.Yield();

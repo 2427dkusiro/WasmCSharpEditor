@@ -1,5 +1,4 @@
-﻿
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 
 using System;
 using System.Globalization;
@@ -25,7 +24,7 @@ namespace CodeRunner
         /// <param name="errorType">メッセージの種類。</param>
         /// <param name="errorId">メッセージのID。CSXXXXなど。</param>
         /// <param name="errorMessage">メッセージの内容。</param>
-        public SimpleCompileError(string sourcePath, int line, int character, ErrorTypes errorType, string errorId, string errorMessage)
+        public SimpleCompileError(string? sourcePath, int line, int character, ErrorTypes errorType, string errorId, string errorMessage)
         {
             SourcePath = sourcePath;
             Line = line;
@@ -38,7 +37,7 @@ namespace CodeRunner
         /// <summary>
         /// コンパイルしたソースコードのパスを取得または設定します。
         /// </summary>
-        public string SourcePath { get; set; }
+        public string? SourcePath { get; set; }
 
         /// <summary>
         /// このメッセージに関連付けられたソースコードの行を取得または設定します。
@@ -59,12 +58,12 @@ namespace CodeRunner
         /// このメッセージのIDを取得または設定します。
         /// </summary>
         /// <example>CSXXXXなど。</example>
-        public string ErrorId { get; set; }
+        public string? ErrorId { get; set; }
 
         /// <summary>
         /// メッセージを取得または設定します。
         /// </summary>
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()
@@ -89,7 +88,7 @@ namespace CodeRunner
         /// <remarks>
         /// このコードは、<see cref="Diagnostic.ToString"/> の実装を引用しています。
         /// </remarks>
-        public static SimpleCompileError FromDiagnostic(Diagnostic diagnostic, IFormatProvider formatter = null)
+        public static SimpleCompileError FromDiagnostic(Diagnostic diagnostic, IFormatProvider? formatter = null)
         {
             if (diagnostic == null)
             {
@@ -104,7 +103,7 @@ namespace CodeRunner
                 if (lineSpan.IsValid && mappedLineSpan.IsValid)
                 {
                     string path;
-                    string basePath;
+                    string? basePath;
                     if (mappedLineSpan.HasMappedPath)
                     {
                         path = mappedLineSpan.Path;
@@ -128,12 +127,12 @@ namespace CodeRunner
             return new SimpleCompileError(null, default, default, _tuple2.errorType, _tuple2.errorId, _message);
         }
 
-        private static string FormatSourcePath(string path, string basePath, IFormatProvider formatter)
+        private static string FormatSourcePath(string path, string? basePath, IFormatProvider? formatter)
         {
             return path;
         }
 
-        private static (int line, int character) GetSourceSpan(Microsoft.CodeAnalysis.Text.LinePositionSpan span, IFormatProvider formatter)
+        private static (int line, int character) GetSourceSpan(Microsoft.CodeAnalysis.Text.LinePositionSpan span, IFormatProvider? formatter)
         {
             return (span.Start.Line + 1, span.Start.Character + 1);
         }

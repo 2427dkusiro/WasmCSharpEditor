@@ -1,4 +1,4 @@
-﻿@using WasmCsTest.UiLogics; 
+﻿@using WasmCsTest.UiLogics;
 @using WasmCsTest.WorkerConnection;
 
 <style>
@@ -10,7 +10,7 @@
     }
 </style>
 
-@if (CodeEditorContext.RunCodeState == RunCodeStatus.Running)
+@if (CodeEditorContext?.RunCodeState == RunCodeStatus.Running)
 {
     <h4>仮想コンソール(実行中)</h4>
 }
@@ -20,30 +20,47 @@ else
 }
 
 <div>
-    <textarea id="virtualConsole" spellcheck="false" readonly="readonly" @bind="text" rows="8" />
+    <textarea id="virtualConsole" spellcheck="false" readonly=@isReadOnly @bind="text" rows="8" />
 </div>
 
 @code {
-    private string text;
+    private string? text;
+
+    private bool isReadOnly = true;
+    private string IsReadOnly { get => isReadOnly ? "readonly" : ""; }
 
     [Parameter]
-    public CodeEditorContext CodeEditorContext { get; set; }
+    public CodeEditorContext? CodeEditorContext { get; set; }
 
 
     protected override void OnInitialized()
     {
-        Action<string> action = (string str) =>
+        if (CodeEditorContext is not null)
         {
-            text += str ?? "";
-            this.StateHasChanged();
+            Action<string?> writeAction = (string? str) =>
+            {
+                text += str ?? "";
+                this.StateHasChanged();
 
-        };
-        CodeEditorContext.WriteStdOut = action;
-        CodeEditorContext.WriteStdError = action;
-        CodeEditorContext.AddUpdateUiCallBack(async () =>
-        {
-            StateHasChanged();
-            await Task.Yield();
-        });
+            };
+            Action readAction = () =>
+            {
+                isReadOnly = false;
+
+            };
+            Action readLineAction = () =>
+            {
+                isReadOnly = false;
+            };
+            CodeEditorContext.WriteStdOut = writeAction;
+            CodeEditorContext.WriteStdError = writeAction;
+            CodeEditorContext.StdInputRead = readAction;
+            CodeEditorContext.StdInputReadLine = readLineAction;
+            CodeEditorContext.AddUpdateUiCallBack(async () =>
+            {
+                StateHasChanged();
+                await Task.Yield();
+            });
+        }
     }
 }

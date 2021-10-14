@@ -5,31 +5,31 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IndexedDbHandler
+namespace JSWrapper.IndexedDb
 {
     /// <summary>
     /// 非同期的に変数を保存する機能へのアクセスを提供します。
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class VariableStorageAsyncAccesser<T>
+    public class VariableStorageAccesser<T>
     {
-        private readonly IAsyncDbAccesser dbAccesser;
+        private readonly IDbAccesser dbAccesser;
         private readonly string name;
-        private VariableStorageAsyncAccesser(IAsyncDbAccesser dbAccesser, string name)
+        private VariableStorageAccesser(IDbAccesser dbAccesser, string name)
         {
             this.dbAccesser = dbAccesser;
             this.name = name;
         }
 
         /// <summary>
-        /// 変数の読み書きを準備して、<see cref="VariableStorageAsyncAccesser{T}"/> を取得します。
+        /// 変数の読み書きを準備して、<see cref="VariableStorageAccesser{T}"/> を取得します。
         /// </summary>
-        /// <param name="dbAccesser">読み書き先のデータベースへの <see cref="IAsyncDbAccesser"/>。</param>
+        /// <param name="dbAccesser">読み書き先のデータベースへの <see cref="IDbAccesser"/>。</param>
         /// <param name="name">読み書きする変数の名前。</param>
         /// <returns></returns>
-        public static async Task<VariableStorageAsyncAccesser<T>> OpenAsync(IAsyncDbAccesser dbAccesser, string name)
+        public static async Task<VariableStorageAccesser<T>> OpenAsync(IDbAccesser dbAccesser, string name)
         {
-            var accesser = new VariableStorageAsyncAccesser<T>(dbAccesser, name);
+            var accesser = new VariableStorageAccesser<T>(dbAccesser, name);
 
             // 確認処理するならここ
 
@@ -46,7 +46,7 @@ namespace IndexedDbHandler
             if (typeof(T) == typeof(string))
             {
                 byte[] data = await dbAccesser.Read(name);
-                string str = GetStringFromBytes(data);
+                string str = TypeConverter.GetStringFromBytes(data);
                 return Unsafe.As<string, T>(ref str);
             }
             throw new NotSupportedException();
@@ -61,32 +61,10 @@ namespace IndexedDbHandler
         {
             if (typeof(T) == typeof(string))
             {
-                await dbAccesser.Put(name, "str", StringToBytes(Unsafe.As<T, string>(ref value)));
+                await dbAccesser.Put(name, "str", TypeConverter.StringToBytes(Unsafe.As<T, string>(ref value)));
                 return;
             }
             throw new NotSupportedException();
-        }
-
-        private static unsafe string GetStringFromBytes(byte[] bin)
-        {
-            fixed (void* ptr = bin)
-            {
-                return new string(new ReadOnlySpan<char>(ptr, bin.Length >> 1));
-            }
-        }
-
-        private static unsafe byte[] StringToBytes(string str)
-        {
-            int len = str.Length << 1;
-            byte[] bin = new byte[len];
-            fixed (void* arrPtr = bin)
-            {
-                fixed (void* strPtr = str)
-                {
-                    Buffer.MemoryCopy(strPtr, arrPtr, len, len);
-                }
-            }
-            return bin;
         }
     }
 }

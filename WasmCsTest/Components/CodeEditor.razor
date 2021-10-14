@@ -39,13 +39,13 @@
 </div>
 
 @code{
-    private CodeMirrorWrapper codeMirrorWrapper;
+    private CodeMirrorWrapper? codeMirrorWrapper;
 
     [Parameter]
-    public CodeEditorContext CodeEditorContext { get; set; }
+    public CodeEditorContext? CodeEditorContext { get; set; }
 
     [Parameter]
-    public string UserCode { get; set; }
+    public string? UserCode { get; set; }
 
     [Parameter]
     public int CodeEditFontSize { get; set; } = 12;
@@ -68,9 +68,13 @@
         await OnUserCodeChanged();
     }
 
-    private async void OnUserCodeChanged(object sender, EventArgs e) => await OnUserCodeChanged();
+    private async void OnUserCodeChanged(object? sender, EventArgs e) => await OnUserCodeChanged();
     private async Task OnUserCodeChanged()
     {
+        if (codeMirrorWrapper is null)
+        {
+            return;
+        }
         UserCode = await codeMirrorWrapper.GetCodeText();
         var line = UserCode.Count(c => c == '\n') + 1;
         if (userCodeLineCount != line)

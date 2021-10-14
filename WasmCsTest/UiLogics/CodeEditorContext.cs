@@ -51,7 +51,7 @@ namespace WasmCsTest.UiLogics
         /// <returns></returns>
         public async Task RunCodeAsync()
         {
-            if (compileJob is null)
+            if (compileJob is null || compileJob.CompileResult is null)
             {
                 throw new InvalidOperationException("コンパイルが実行されていません");
             }
@@ -59,21 +59,27 @@ namespace WasmCsTest.UiLogics
             {
                 throw new InvalidOperationException("コンパイル失敗した結果は実行できません");
             }
+            if (WriteStdOut is null || WriteStdError is null || StdInputRead is null || StdInputReadLine is null)
+            {
+                throw new InvalidOperationException("コードを実行する前に標準入出力リダイレクト用関数を設定する必要があります。");
+            }
 
             var job = new RunCodeJob()
             {
                 AssemblyId = compileJob.CompileResultId,
                 WriteStdOutCallBack = WriteStdOut,
                 WriteStdErrorCallBack = WriteStdError,
+                StdInputReadCallBack = StdInputRead,
+                StdInputReadLineCallBack = StdInputReadLine,
             };
             runCodeJob = job;
             await compileQueueService.RunCodeAsync(job, updateUiCallBacks);
         }
 
-        private CompileJob compileJob;
-        private RunCodeJob runCodeJob;
+        private CompileJob? compileJob;
+        private RunCodeJob? runCodeJob;
 
-        private readonly List<Func<Task>> updateUiCallBacks = new List<Func<Task>>();
+        private readonly List<Func<Task>> updateUiCallBacks = new();
 
         /// <summary>
         /// UIを描画更新すべきときに実行される関数を追加します。
@@ -101,22 +107,32 @@ namespace WasmCsTest.UiLogics
         /// <summary>
         /// コンパイルの結果を取得します。
         /// </summary>
-        public CompilerResultMessage CompileResult => compileJob?.CompileResult;
+        public CompilerResultMessage? CompileResult => compileJob?.CompileResult;
 
         /// <summary>
         /// コンパイルにかかった時間を取得します。
         /// </summary>
-        public TimeSpan CompileTime => compileJob.CompileTime;
+        public TimeSpan? CompileTime => compileJob?.CompileTime;
 
         /// <summary>
         /// 標準出力の書き込みを実行する関数を取得または設定します。
         /// </summary>
-        public Action<string> WriteStdOut { get; set; }
+        public Action<string?>? WriteStdOut { get; set; }
 
         /// <summary>
         /// 標準エラー出力の書き込みを実行する関数を取得または設定します。
         /// </summary>
-        public Action<string> WriteStdError { get; set; }
+        public Action<string?>? WriteStdError { get; set; }
+
+        /// <summary>
+        /// 標準入力から一文字読み取りを開始する関数を取得または設定します。
+        /// </summary>
+        public Action? StdInputRead { get; set; }
+
+        /// <summary>
+        /// 標準入力から一行読み取りを開始する関数を取得または設定します。
+        /// </summary>
+        public Action? StdInputReadLine { get; set; }
 
         /// <summary>
         /// コード実行の進捗を取得します。
@@ -126,6 +142,6 @@ namespace WasmCsTest.UiLogics
         /// <summary>
         /// コード実行の結果を取得します。
         /// </summary>
-        public RunCodeResult RunCodeResult => runCodeJob?.RunCodeResult;
+        public RunCodeResult? RunCodeResult => runCodeJob?.RunCodeResult;
     }
 }

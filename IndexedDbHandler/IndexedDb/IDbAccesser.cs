@@ -4,13 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IndexedDbHandler
+namespace JSWrapper.IndexedDb
 {
     /// <summary>
     /// 非同期的にデータベースへアクセスする機能を提供することを約束します。
     /// CRUDと基本的なオプション機能の実装を約束されます。
     /// </summary>
-    public interface IAsyncDbAccesser
+    /// <remarks>
+    /// <see cref="DefaultDbAccesser"/> と <see cref="WorkerDbAccesser"/> を共通化・抽象化します。
+    /// </remarks>
+    public interface IDbAccesser
     {
         /// <summary>
         /// 新しい要素をデータベースに追加します。

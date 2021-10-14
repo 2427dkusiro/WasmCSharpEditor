@@ -6,39 +6,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace IndexedDbHandler
+namespace JSWrapper.IndexedDb
 {
     /// <summary>
     /// 非同期的に変数を読み書きできる、半永続的なストレージへのアクセスを簡略化します。
     /// </summary>
-    public class AsyncVariableStorageService
+    public class VariableStorageService
     {
-        private AsyncVariableStorageService() { }
+        private VariableStorageService() { }
 
-        private IAsyncDbAccesser dbAccesser;
+        private IDbAccesser dbAccesser;
 
         /// <summary>
-        /// <see cref="AsyncVariableStorageService"/> クラスの新しいインスタンスを初期化します。
+        /// <see cref="VariableStorageService"/> クラスの新しいインスタンスを初期化します。
         /// </summary>
         /// <param name="jSRuntime">デフォルトの <see cref="IJSRuntime"/>。</param>
         /// <returns></returns>
-        public static AsyncVariableStorageService CreateInstance(IJSRuntime jSRuntime)
+        public static VariableStorageService CreateInstance(IJSRuntime jSRuntime)
         {
-            var variableStorageService = new AsyncVariableStorageService
+            var variableStorageService = new VariableStorageService
             {
-                dbAccesser = new DefaultAsyncDbAccesser(jSRuntime)
+                dbAccesser = new DefaultDbAccesser(jSRuntime)
             };
             return variableStorageService;
         }
 
         /// <summary>
-        /// ワーカーの <see cref="IJSRuntime"/> から <see cref="AsyncVariableStorageService"/> クラスの新しいインスタンスを初期化します。
+        /// ワーカーの <see cref="IJSRuntime"/> から <see cref="VariableStorageService"/> クラスの新しいインスタンスを初期化します。
         /// </summary>
         /// <param name="jSRuntime">ワーカーの <see cref="IJSRuntime"/>。</param>
         /// <returns></returns>
-        public static AsyncVariableStorageService CreateInstanceFromWorker(IJSRuntime jSRuntime)
+        public static VariableStorageService CreateInstanceFromWorker(IJSRuntime jSRuntime)
         {
-            var variableStorageService = new AsyncVariableStorageService
+            var variableStorageService = new VariableStorageService
             {
                 dbAccesser = new WorkerDbAccesser(jSRuntime)
             };
@@ -51,9 +51,9 @@ namespace IndexedDbHandler
         /// <typeparam name="T">変数の型。</typeparam>
         /// <param name="name">変数の名前。</param>
         /// <returns></returns>
-        public async Task<VariableStorageAsyncAccesser<T>> OpenAsync<T>(string name)
+        public async Task<VariableStorageAccesser<T>> OpenAsync<T>(string name)
         {
-            return await VariableStorageAsyncAccesser<T>.OpenAsync(dbAccesser, name);
+            return await VariableStorageAccesser<T>.OpenAsync(dbAccesser, name);
         }
     }
 }

@@ -20,7 +20,7 @@ namespace WasmCsTest.WorkerConnection
         /// <summary>
         /// コンパイルするコードを取得または設定します。
         /// </summary>
-        public string Code { get; set; }
+        public string? Code { get; set; }
 
         /// <summary>
         /// コンパイルの経過を取得または設定します。
@@ -35,7 +35,7 @@ namespace WasmCsTest.WorkerConnection
         /// <summary>
         /// コンパイルの結果を取得または設定します。
         /// </summary>
-        public CompilerResultMessage CompileResult { get; set; }
+        public CompilerResultMessage? CompileResult { get; set; }
 
         /// <summary>
         /// コンパイル結果に関連付けられたIDを取得または設定します。

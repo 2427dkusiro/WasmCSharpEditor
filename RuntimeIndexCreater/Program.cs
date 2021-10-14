@@ -65,11 +65,7 @@ namespace RuntimeIndexCreater
                 {
                     byte[] hash = SHA256.Create().ComputeHash(fileStream);
                     string str = Convert.ToBase64String(hash);
-                    dllLoadInfos.Add(new CodeRunner.DllLoader.DllLoadInfo()
-                    {
-                        Name = Path.GetFileName(file),
-                        CultureString = null,
-                    });
+                    dllLoadInfos.Add(new CodeRunner.DllLoader.DllLoadInfo(Path.GetFileName(file), null));
                 }
             }
 
@@ -107,10 +103,7 @@ namespace RuntimeIndexCreater
             }
             */
 
-            var loadInfo = new CodeRunner.DllLoader.LoadInfo()
-            {
-                DllLoadInfos = dllLoadInfos.ToArray(),
-            };
+            var loadInfo = new CodeRunner.DllLoader.DllLoadInfoSet(dllLoadInfos.ToArray());
             string json = JsonSerializer.Serialize(loadInfo);
 
             using (var streamWriter = new StreamWriter(output, false, Encoding.UTF8))

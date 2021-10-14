@@ -41,11 +41,11 @@ else
 <WasmCsTest.Components.VirtualConsole CodeEditorContext="CodeEditorContext" />
 
 @code{
-    private string userCode;
-    private CodeEditorContext CodeEditorContext;
+    private string? userCode;
+    private CodeEditorContext? CodeEditorContext;
 
-    private bool isCompiling => CodeEditorContext.CompileState == CompileStatus.CompileWaiting || CodeEditorContext.CompileState == CompileStatus.Compiling;
-    private bool isRunning => CodeEditorContext.RunCodeState == RunCodeStatus.RunWaiting || CodeEditorContext.RunCodeState == RunCodeStatus.Running;
+    private bool isCompiling => CodeEditorContext is null ? false : CodeEditorContext.CompileState == CompileStatus.CompileWaiting || CodeEditorContext.CompileState == CompileStatus.Compiling;
+    private bool isRunning => CodeEditorContext is null ? false : CodeEditorContext.RunCodeState == RunCodeStatus.RunWaiting || CodeEditorContext.RunCodeState == RunCodeStatus.Running;
 
     protected override void OnInitialized()
     {
@@ -64,10 +64,17 @@ else
 
     private async Task OnRunButtonClicked()
     {
-        await CodeEditorContext.Compile(userCode);
-        if (CodeEditorContext.CompileResult.IsSuccessed)
+        if (CodeEditorContext is not null && userCode is not null)
         {
-            await CodeEditorContext.RunCodeAsync();
+            await CodeEditorContext.Compile(userCode);
+            if(CodeEditorContext.CompileResult is null)
+            {
+                throw new InvalidOperationException();
+            }
+            if (CodeEditorContext.CompileResult.IsSuccessed)
+            {
+                await CodeEditorContext.RunCodeAsync();
+            }
         }
     }
 }
