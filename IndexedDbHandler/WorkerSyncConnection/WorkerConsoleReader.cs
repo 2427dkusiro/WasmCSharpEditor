@@ -7,28 +7,31 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace JSWrapper.WorkerConsoleConnection
+namespace JSWrapper.WorkerSyncConnection
 {
     public class WorkerConsoleReader
     {
         private readonly IJSInProcessRuntime runtime;
 
-        public WorkerConsoleReader(IJSInProcessRuntime runtime)
+        internal WorkerConsoleReader(IJSInProcessRuntime runtime)
         {
             this.runtime = runtime;
         }
 
-        public async Task InitializeAsync(string baseUrl)
+        const string sig = "<!--6MENWdyDt0p4Qnp9IGYL4OSYj2/Ns9k6uv8yONpN2ph2zNKm+ILRdnvkvl9H7dqFQB+K7aXXDTXo057dUH5vKg==-->";
+        public string ReadInput(string guid)
         {
-            await runtime.InvokeAsync<IJSInProcessObjectReference>("importLocalScripts", SettingProvider.JSDirPath + "WorkerConsoleReader.js");
-            await runtime.InvokeVoidAsync("SetBaseUrl", baseUrl);
-        }
-
-        public void ReadInput()
-        {
-            string resStr = runtime.Invoke<string>("GetInput");
-            XhrResult result = JsonSerializer.Deserialize<XhrResult>(resStr);
-            Console.WriteLine($"XHR Result:{result}");
+            string rawResult = runtime.Invoke<string>("GetInput", guid);
+            XhrResult result = JsonSerializer.Deserialize<XhrResult>(rawResult);
+            if (result.Status == 200)
+            {
+                if (!result.Response.Contains(sig))
+                {
+                    return result.Response;
+                }
+                throw new InvalidOperationException("service workerによる書き換えが失敗しました。");
+            }
+            throw new InvalidOperationException("コンソール入力受け取りのステータスコードが200以外でした。");
         }
     }
 

@@ -127,12 +127,12 @@ namespace WasmCsTest.UiLogics
         /// <summary>
         /// 標準入力から一文字読み取りを開始する関数を取得または設定します。
         /// </summary>
-        public Action? StdInputRead { get; set; }
+        public Action<string>? StdInputRead { get; set; }
 
         /// <summary>
         /// 標準入力から一行読み取りを開始する関数を取得または設定します。
         /// </summary>
-        public Action? StdInputReadLine { get; set; }
+        public Action<string>? StdInputReadLine { get; set; }
 
         /// <summary>
         /// コード実行の進捗を取得します。

@@ -1,6 +1,8 @@
 ﻿@using WasmCsTest.UiLogics;
 @using WasmCsTest.WorkerConnection;
 
+@inject IJSRuntime jsRuntime;
+
 <style>
     #virtualConsole {
         width: 100%;
@@ -20,7 +22,7 @@ else
 }
 
 <div>
-    <textarea id="virtualConsole" spellcheck="false" readonly=@isReadOnly @bind="text" rows="8" />
+    <textarea id="virtualConsole" spellcheck="false" readonly=@isReadOnly @bind="text" @oninput="OnInput" rows="8" />
 </div>
 
 @code {
@@ -29,12 +31,18 @@ else
     private bool isReadOnly = true;
     private string IsReadOnly { get => isReadOnly ? "readonly" : ""; }
 
+    private bool isReadLine;
+
     [Parameter]
     public CodeEditorContext? CodeEditorContext { get; set; }
 
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        consoleInputSender = new JSWrapper.WorkerSyncConnection.ConsoleInputSender();
+        await consoleInputSender.InitializeAsync(jsRuntime);
+        text = "";
+
         if (CodeEditorContext is not null)
         {
             Action<string?> writeAction = (string? str) =>
@@ -43,14 +51,21 @@ else
                 this.StateHasChanged();
 
             };
-            Action readAction = () =>
+            Action<string> readAction = (string guid) =>
             {
+                preLength = text?.Length ?? 0;
+                currentReadId = guid;
+                isReadLine = false;
                 isReadOnly = false;
-
+                this.StateHasChanged();
             };
-            Action readLineAction = () =>
+            Action<string> readLineAction = (string guid) =>
             {
+                preLength = text?.Length ?? 0;
+                currentReadId = guid;
+                isReadLine = true;
                 isReadOnly = false;
+                this.StateHasChanged();
             };
             CodeEditorContext.WriteStdOut = writeAction;
             CodeEditorContext.WriteStdError = writeAction;
@@ -61,6 +76,37 @@ else
                 StateHasChanged();
                 await Task.Yield();
             });
+        }
+    }
+
+    private int preLength;
+    private string? currentReadId;
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        text = e.Value as string;
+        if (text is null || currentReadId is null) { throw new InvalidOperationException(); }
+        if (isReadLine)
+        {
+            var nl = Environment.NewLine;
+            if (text.EndsWith(nl))
+            {
+                await SendInput(text[preLength..^(nl.Length)], currentReadId);
+                isReadOnly = true;
+            }
+        }
+        else
+        {
+            await SendInput(text[preLength..^0], currentReadId);
+            isReadOnly = true;
+        }
+    }
+
+    private JSWrapper.WorkerSyncConnection.ConsoleInputSender? consoleInputSender;
+    private async Task SendInput(string message, string guid)
+    {
+        if (consoleInputSender is not null)
+        {
+            await consoleInputSender.SendInput(message, guid);
         }
     }
 }

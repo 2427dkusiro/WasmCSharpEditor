@@ -46,12 +46,6 @@
             <returns>常に <c>null</c> が返されます。</returns>
             <remarks>ライブラリの制約により、戻り値が <see cref="T:System.Threading.Tasks.Task"/> 型であるメソッドを正しく待機することができないようであるため、このメソッドを利用することでコンパイラの初期化を待機することができます。</remarks>
         </member>
-        <member name="M:CodeRunner.CodeCompileService.TestJS">
-            <summary>
-            
-            </summary>
-            <returns></returns>
-        </member>
         <member name="M:CodeRunner.CodeCompileService.CompileAsync(System.String)">
             <summary>
             コードをコンパイルします。
@@ -611,12 +605,13 @@
             ワーカーが UI と同期通信することで入力を得る <see cref="T:System.IO.TextReader"/> を表現します。
             </summary>
         </member>
-        <member name="M:CodeRunner.IO.WorkerTextReader.#ctor(System.EventHandler,System.EventHandler)">
+        <member name="M:CodeRunner.IO.WorkerTextReader.#ctor(System.EventHandler{System.Guid},System.EventHandler{System.Guid},JSWrapper.WorkerSyncConnection.WorkerConsoleReader)">
             <summary>
             <see cref="T:CodeRunner.IO.WorkerTextReader"/> クラスの新しいインスタンスを初期化します。
             </summary>
             <param name="onReadRequested"></param>
             <param name="onReadLineRequested"></param>
+            <param name="workerConsoleReader"></param>
         </member>
         <member name="E:CodeRunner.IO.WorkerTextReader.OnReadRequested">
             <summary>

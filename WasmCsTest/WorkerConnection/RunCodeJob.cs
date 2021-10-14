@@ -35,12 +35,12 @@ namespace WasmCsTest.WorkerConnection
         /// <summary>
         /// 標準入力の一文字分読み取りが要求されたときに実行される関数を取得または設定します。
         /// </summary>
-        public Action? StdInputReadCallBack { get; set; }
+        public Action<string>? StdInputReadCallBack { get; set; }
 
         /// <summary>
         /// 標準入力の一行分読み取りが要求されたときに実行される関数を取得または設定します。
         /// </summary>
-        public Action? StdInputReadLineCallBack { get; set; }
+        public Action<string>? StdInputReadLineCallBack { get; set; }
 
         /// <summary>
         /// コードの実行結果を取得または設定します。

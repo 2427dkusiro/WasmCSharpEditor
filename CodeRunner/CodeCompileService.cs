@@ -1,6 +1,6 @@
 ﻿using CodeRunner.IO;
 
-using JSWrapper.WorkerConsoleConnection;
+using JSWrapper.WorkerSyncConnection;
 
 using Microsoft.JSInterop;
 
@@ -79,18 +79,6 @@ namespace CodeRunner
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        public async Task<string?> TestJS()
-        {
-            var workerConsoleReader = new WorkerConsoleReader(jSRuntime as IJSInProcessRuntime);
-            await workerConsoleReader.InitializeAsync(httpClient.BaseAddress?.AbsoluteUri ?? throw new Exception());
-            workerConsoleReader.ReadInput();
-            return null;
-        }
-
-        /// <summary>
         /// コードをコンパイルします。
         /// </summary>
         /// <param name="code">コンパイルする C# コード。</param>
@@ -125,7 +113,7 @@ namespace CodeRunner
         /// <remarks>
         /// このイベントをリッスンし、イベントの発生に応じて入力の読み取りを開始します。
         /// </remarks>
-        public event EventHandler<int>? StdInputReadRequested;
+        public event EventHandler<string>? StdInputReadRequested;
 
         /// <summary>
         /// 標準入力の１行分の読み取りが要求されたときに発生するイベント。
@@ -133,7 +121,10 @@ namespace CodeRunner
         /// <remarks>
         /// このイベントをリッスンし、イベントの発生に応じて入力の読み取りを開始します。
         /// </remarks>
-        public event EventHandler<int>? StdInputReadLineRequested;
+        public event EventHandler<string>? StdInputReadLineRequested;
+
+
+        private WorkerConsoleReaderService? workerConsoleReaderService;
 
         /// <summary>
         /// コードを実行します。
@@ -146,10 +137,15 @@ namespace CodeRunner
             {
                 throw new ArgumentException("指定されたアセンブリが見つかりません", nameof(guid));
             }
+            var url = httpClient.BaseAddress?.AbsoluteUri ?? throw new InvalidOperationException();
+            if (workerConsoleReaderService is null)
+            {
+                workerConsoleReaderService = new WorkerConsoleReaderService(jSRuntime as IJSInProcessRuntime, url);
+            }
 
             var stdOut = new EventTextWriter((object? sender, string? str) => StdOutWriteRequested?.Invoke(sender, str));
             var stdError = new EventTextWriter((object? sender, string? str) => StdErrorWriteRequested?.Invoke(sender, str));
-            var stdIn = new WorkerTextReader((object? sender, EventArgs e) => StdInputReadRequested?.Invoke(sender, 0), (object? sender, EventArgs e) => StdInputReadLineRequested?.Invoke(sender, 0));
+            var stdIn = new WorkerTextReader((object? sender, Guid guid) => StdInputReadRequested?.Invoke(sender, guid.ToString()), (object? sender, Guid guid) => StdInputReadLineRequested?.Invoke(sender, guid.ToString()), workerConsoleReaderService.GetReader());
 
             return CodeExecuter.RunCode(result, stdIn, stdOut, stdError);
         }

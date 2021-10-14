@@ -14,7 +14,6 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace WasmCsTest.WorkerConnection
@@ -83,14 +82,11 @@ namespace WasmCsTest.WorkerConnection
                 throw new InvalidOperationException();
             }
             await workerBackgroundService.RunAsync(obj => obj.ApplyParentContext(httpClient.BaseAddress.AbsoluteUri, culture.Name));
-
-            await workerBackgroundService.RunAsync(obj => obj.TestJS());
-
             await workerBackgroundService.RunAsync(obj => obj.InitializeCompilerAwaitableAsync());
             await workerBackgroundService.RegisterEventListenerAsync<string?>(nameof(CodeCompileService.StdOutWriteRequested), OnStdOutReceived);
             await workerBackgroundService.RegisterEventListenerAsync<string?>(nameof(CodeCompileService.StdErrorWriteRequested), OnStdErrorReceived);
-            await workerBackgroundService.RegisterEventListenerAsync<int>(nameof(CodeCompileService.StdInputReadRequested), OnStdInputReadRequested);
-            await workerBackgroundService.RegisterEventListenerAsync<int>(nameof(CodeCompileService.StdInputReadLineRequested), OnStdInputReadLineRequested);
+            await workerBackgroundService.RegisterEventListenerAsync<string>(nameof(CodeCompileService.StdInputReadRequested), OnStdInputReadRequested);
+            await workerBackgroundService.RegisterEventListenerAsync<string>(nameof(CodeCompileService.StdInputReadLineRequested), OnStdInputReadLineRequested);
             stopwatch.Stop();
             Console.WriteLine($"コンパイラ初期化に要した総時間:{stopwatch.ElapsedMilliseconds}ms");
         }
@@ -110,14 +106,14 @@ namespace WasmCsTest.WorkerConnection
             runCodeJob?.WriteStdErrorCallBack?.Invoke(e);
         }
 
-        private void OnStdInputReadRequested(object? sender, int n)
+        private void OnStdInputReadRequested(object? sender, string guid)
         {
-            runCodeJob?.StdInputReadCallBack?.Invoke();
+            runCodeJob?.StdInputReadCallBack?.Invoke(guid);
         }
 
-        private void OnStdInputReadLineRequested(object? sender, int n)
+        private void OnStdInputReadLineRequested(object? sender, string guid)
         {
-            runCodeJob?.StdInputReadLineCallBack?.Invoke();
+            runCodeJob?.StdInputReadLineCallBack?.Invoke(guid);
         }
 
         /// <summary>

@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Content Remove="wwwroot\js\OnFetchHandler.js" />
+    <Content Remove="wwwroot\js\UIMessageSender.js" />
   </ItemGroup>
 
   <ItemGroup>
