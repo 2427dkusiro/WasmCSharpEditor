@@ -46,7 +46,7 @@ async function onFetch(event) {
     const originalResponseBuffer = await response.arrayBuffer();
     const originalResponseArray = new Int8Array(originalResponseBuffer);
     const decompressedResponseArray = BrotliDecode(originalResponseArray);
-    const contentType = response.type;
+    const contentType = response.headers.contentType;
     return new Response(decompressedResponseArray,
         { headers: { 'content-type': contentType } });
 }
