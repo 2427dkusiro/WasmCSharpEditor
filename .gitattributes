@@ -1,7 +1,6 @@
-docs/* linguist-documentation
-IndexedDbHandler/wwwroot/lib/* linguist-vendored
-IndexedDbHandler/wwwroot/lib/dexie/* linguist-vendored
-WasmCsTest/wwwroot/lib/* linguist-vendored
+docs/* linguist-documentation=true
+IndexedDbHandler/wwwroot/lib/* linguist-vendored=true
+WasmCsTest/wwwroot/lib/* linguist-vendored=true
 
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
