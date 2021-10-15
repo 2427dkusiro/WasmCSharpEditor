@@ -22,35 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="wwwroot\js\*.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Remove="wwwroot\js\DbOperationsNet5.js" />
-    <Content Remove="wwwroot\js\DbOperationsWorkerNet5.js" />
-    <Content Remove="wwwroot\js\OnFetchHandler.js" />
-    <Content Remove="wwwroot\js\UIMessageSender.js" />
-    <Content Remove="wwwroot\js\WorkerConsoleReader.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="wwwroot\js\DbOperationsNet5.js" />
-    <EmbeddedResource Remove="wwwroot\js\DbOperationsWorkerNet5.js" />
-    <EmbeddedResource Remove="wwwroot\js\OnFetchHandler.js" />
-    <EmbeddedResource Remove="wwwroot\js\UIMessageSender.js" />
-    <EmbeddedResource Remove="wwwroot\js\WorkerConsoleReader.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="wwwroot\js\DbOperationsNet5.js" />
-    <None Include="wwwroot\js\DbOperationsWorkerNet5.js" />
-    <None Include="wwwroot\js\OnFetchHandler.js" />
-    <None Include="wwwroot\js\UIMessageSender.js" />
-    <None Include="wwwroot\js\WorkerConsoleReader.js" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="wwwroot\js\DbOperationsWorkerNet5.js" />
+    <EmbeddedResource Include="wwwroot\**" />
   </ItemGroup>
 
 </Project>

@@ -10,8 +10,9 @@
     <link href="css/app.css" rel="stylesheet" />
     <link href="WasmCsTest.styles.css" rel="stylesheet" />
 
-    <!--syntax highlighter-->
+    <!--syntax highlighter
     <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css" rel="stylesheet" />
+    -->
 
     <!--code editer-->
     <link href="lib/codemirror/lib/codemirror.css" rel="stylesheet" />
@@ -34,12 +35,29 @@
     <!--SWA-->
     <script>navigator.serviceWorker.register('service-worker.js');</script>
 
-    <!--syntax highlighter-->
+    <!--syntax highlighter>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
+    -->
 
     <!--code editer-->
     <script src="lib/codemirror/lib/codemirror.js"></script>
     <script src="lib/codemirror/mode/clike/clike.js"></script>
-</body>
 
+    <!-- Start Single Page Apps for GitHub Pages -->
+    <script type="text/javascript">
+        // Single Page Apps for GitHub Pages
+        // MIT License
+        // https://github.com/rafgraph/spa-github-pages
+        (function (l) {
+            if (l.search[1] === '/') {
+                var decoded = l.search.slice(1).split('&').map(function (s) {
+                    return s.replace(/~and~/g, '&')
+                }).join('?');
+                window.history.replaceState(null, null,
+                    l.pathname.slice(0, -1) + decoded + l.hash
+                );
+            }
+        }(window.location))
+    </script>
+</body>
 </html>
