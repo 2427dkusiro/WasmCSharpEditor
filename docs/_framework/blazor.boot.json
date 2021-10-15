@@ -197,7 +197,7 @@
       "BlazorWorker.WorkerCore.dll": "sha256-tPGeue6mKLlO27LO5HJfFLl8Mx0ANUyfOEtyv4tHoRY=",
       "BlazorWorker.Extensions.JSRuntime.dll": "sha256-g6CbEOiq+Um79xjV37kHS8kChZ5TsRU3gu46K4cm7x4=",
       "CodeRunner.dll": "sha256-uuQHrl64kU3e640z2cS686QOmnnqQnn7dgzK1X3lJOA=",
-      "JSWrapper.dll": "sha256-zcjs2Ms9za8apKWMAfIVSF8uHpM4fjy7NhrHGl4ZnWs=",
+      "JSWrapper.dll": "sha256-uidmtzyehnrczdFUdyZu9mdAVDMj4kbhV9AV4sbvn+E=",
       "WasmCsTest.dll": "sha256-OeotR8g59vJT04JG5CxzjzTLGyHnhUfGfHE7hy\/7FF8="
     },
     "lazyAssembly": null,

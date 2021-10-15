@@ -933,7 +933,7 @@
       "url": "_framework\/CodeRunner.dll"
     },
     {
-      "hash": "sha256-zcjs2Ms9za8apKWMAfIVSF8uHpM4fjy7NhrHGl4ZnWs=",
+      "hash": "sha256-uidmtzyehnrczdFUdyZu9mdAVDMj4kbhV9AV4sbvn+E=",
       "url": "_framework\/JSWrapper.dll"
     },
     {
@@ -1045,7 +1045,7 @@
       "url": "_framework\/zh-Hant\/Microsoft.CodeAnalysis.CSharp.resources.dll"
     },
     {
-      "hash": "sha256-44W92XVoVqYwu3c2qTHYnboXMbCIHxBL1iG6CW6JMlU=",
+      "hash": "sha256-3+lQNa4M\/8mx8H0yqqlQpy8dzwlCzmO375LI1ckleOE=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -1053,5 +1053,5 @@
       "url": "_framework\/blazor.webassembly.js"
     }
   ],
-  "version": "Po8R7aiU"
+  "version": "pEUY749o"
 };
