@@ -1,3 +1,4 @@
+import { BrotliDecode } from './decode.min.js';
 self.importScripts("_content/JSWrapper/js/OnFetchHandler.js");
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => event.waitUntil(onInstall(event)));
@@ -16,7 +17,7 @@ async function onInstall(event) {
     const assetsRequests = self.assetsManifest.assets
         .filter(asset => offlineAssetsInclude.some(pattern => pattern.test(asset.url)))
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
-        .map(asset => new Request(asset.url, { integrity: asset.hash }));
+        .map(asset => new Request(asset.url + ".br", { integrity: asset.hash }));
     await caches.open(cacheName).then(cache => cache.addAll(assetsRequests));
 }
 
@@ -37,10 +38,16 @@ async function onFetch(event) {
     let cachedResponse = null;
     if (event.request.method === 'GET') {
         const shouldServeIndexHtml = event.request.mode === 'navigate';
-        const request = shouldServeIndexHtml ? 'index.html' : event.request;
+        const request = (shouldServeIndexHtml ? 'index.html' : event.request) + ".br";
         const cache = await caches.open(cacheName);
         cachedResponse = await cache.match(request);
     }
-    return cachedResponse || fetch(event.request);
+    const response = cachedResponse || await fetch(event.request);
+    const originalResponseBuffer = await response.arrayBuffer();
+    const originalResponseArray = new Int8Array(originalResponseBuffer);
+    const decompressedResponseArray = BrotliDecode(originalResponseArray);
+    const contentType = response.type;
+    return new Response(decompressedResponseArray,
+        { headers: { 'content-type': contentType } });
 }
 /* Manifest version: xbtyFJ+2 */
