@@ -1,3 +1,7 @@
+docs/* linguist-documentation=true
+IndexedDbHandler/wwwroot/lib/* linguist-vendored=true
+WasmCsTest/wwwroot/lib/* linguist-vendored=true
+
 ###############################################################################
 # Set default behavior to automatically normalize line endings.
 ###############################################################################
@@ -61,8 +65,3 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
-
-
-docs/* linguist-documentation
-IndexedDbHandler/wwwroot/lib/* linguist-vendored
-WasmCsTest/wwwroot/lib/* linguist-vendored
