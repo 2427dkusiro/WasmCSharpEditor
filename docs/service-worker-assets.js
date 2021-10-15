@@ -809,26 +809,6 @@
       "url": "_content\/JSWrapper\/Dummy.html"
     },
     {
-      "hash": "sha256-Sj2P+x0RwNFVYRz7LGyzp2nutaQqgr1lgRhQAdtekBI=",
-      "url": "_content\/JSWrapper\/js\/DbOperationsNet5.js"
-    },
-    {
-      "hash": "sha256-j63+KGPvrXmZsHdJz0EATJlPobq2AGLYEj4Pl0mLkbo=",
-      "url": "_content\/JSWrapper\/js\/DbOperationsWorkerNet5.js"
-    },
-    {
-      "hash": "sha256-ejlTs1bJHT01ErqkMgodf4UXcQ0wz51dGw5OyCJmPCs=",
-      "url": "_content\/JSWrapper\/js\/OnFetchHandler.js"
-    },
-    {
-      "hash": "sha256-3Emg5nt6nmhxJzT7FZlWdRfD883wsC6vCgcqHT\/fiZA=",
-      "url": "_content\/JSWrapper\/js\/UIMessageSender.js"
-    },
-    {
-      "hash": "sha256-UGezuDfCbmOd6eVzDPl8RXMP9nhM7Joh5eiktwW8rKQ=",
-      "url": "_content\/JSWrapper\/js\/WorkerConsoleReader.js"
-    },
-    {
       "hash": "sha256-6BNX6HRV0sffCoFUSsuFIEvtKnikAlx7Xm6ZDWGcDhs=",
       "url": "_content\/JSWrapper\/lib\/dexie\/dexie.js"
     },
@@ -1053,5 +1033,5 @@
       "url": "_framework\/blazor.webassembly.js"
     }
   ],
-  "version": "Po8R7aiU"
+  "version": "SsTaFLAS"
 };
