@@ -1,4 +1,4 @@
-import { BrotliDecode } from './decode.min.js';
+self.importScripts('./decode.min.js');
 self.importScripts("_content/JSWrapper/js/OnFetchHandler.js");
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => event.waitUntil(onInstall(event)));
