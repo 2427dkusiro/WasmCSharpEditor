@@ -13,6 +13,10 @@
       "url": ".nojekyll"
     },
     {
+      "hash": "sha256-q6LuXL6PzxD0kbE2HBLTfR5ZSg0WbRRRrJXDla8OahE=",
+      "url": "404.html"
+    },
+    {
       "hash": "sha256-8aM9R9K90X6h+KPDW4OzrEh071mAs7dvAQxjBxAZQAc=",
       "url": "css\/app.css"
     },
@@ -61,6 +65,10 @@
       "url": "css\/open-iconic\/README.md"
     },
     {
+      "hash": "sha256-gs\/HZAVlkUqPoE1ClEgWuL2\/aOku2irjisnCatVEAa4=",
+      "url": "decode.min.js"
+    },
+    {
       "hash": "sha256-Jtxf9L+5ITKRc1gIRl4VbUpGkRNfOBXjYTdhJD4facM=",
       "url": "favicon.ico"
     },
@@ -69,7 +77,7 @@
       "url": "icon-512.png"
     },
     {
-      "hash": "sha256-bKwAc9albvXgKx6pQtpdM1YgtNcsCAyHfw0xmiz43\/4=",
+      "hash": "sha256-9oPQNAQZAy9C3hSyyNq3CVvS3n\/U0JdQem78UQRcTxI=",
       "url": "index.html"
     },
     {
@@ -1053,5 +1061,5 @@
       "url": "_framework\/blazor.webassembly.js"
     }
   ],
-  "version": "pEUY749o"
+  "version": "X9mkZwIM"
 };
