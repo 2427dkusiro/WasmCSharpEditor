@@ -31,6 +31,7 @@ async function onActivate(event) {
 }
 
 async function onFetch(event) {
+    console.log("fetch requested:" + event.request);
     if (IsSpecial(event.request)) {
         let response = await GetSpecialResponse(event.request);
         return response;
