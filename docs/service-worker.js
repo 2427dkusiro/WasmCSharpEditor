@@ -38,7 +38,8 @@ async function onFetch(event) {
     let cachedResponse = null;
     if (event.request.method === 'GET') {
         const shouldServeIndexHtml = event.request.mode === 'navigate';
-        const cpRequestUrl = (shouldServeIndexHtml ? 'index.html' : event.request.url) + ".br";
+        const requestUrl = (shouldServeIndexHtml ? 'index.html' : event.request.url);
+        const cpRequestUrl = (requestUrl.endsWith(".br")) ? requestUrl : (requestUrl + ".br");
         const cpRequest = new Request(cpRequestUrl, { method: "GET" });
 
         const cache = await caches.open(cacheName);
