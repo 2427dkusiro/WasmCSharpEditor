@@ -56,7 +56,7 @@ async function onFetch(event) {
         const cache = await caches.open(cacheName);
         let response = await cache.match(request) || await fetch(request);
         if (decodeRequired) {
-            const originalResponseBuffer = await cpResponse.arrayBuffer();
+            const originalResponseBuffer = await response.arrayBuffer();
             const originalResponseArray = new Int8Array(originalResponseBuffer);
             const decompressedResponseArray = BrotliDecode(originalResponseArray);
             const contentType = event.request.headers.get("content-type");
