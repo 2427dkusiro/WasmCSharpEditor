@@ -36,10 +36,11 @@ async function onFetch(event) {
         return response;
     }
     let cachedResponse = null;
-    const cpRequest = event.request + ".br";
     if (event.request.method === 'GET') {
         const shouldServeIndexHtml = event.request.mode === 'navigate';
-        const request = (shouldServeIndexHtml ? 'index.html' : event.request) + ".br";
+        const cpRequestUrl = (shouldServeIndexHtml ? 'index.html' : event.request.url) + ".br";
+        const cpRequest = new Request(cpRequestUrl, { method: "GET" });
+
         const cache = await caches.open(cacheName);
         const cpResponse = await cache.match(cpRequest) || await fetch(cpRequest);
         const originalResponseBuffer = await cpResponse.arrayBuffer();
