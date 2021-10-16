@@ -81,8 +81,7 @@
                         const decompressedResponseArray = BrotliDecode.BrotliDecode(originalResponseArray);
                         const contentType = type ===
                             'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
-                        return new Response(decompressedResponseArray,
-                            { headers: { 'content-type': contentType } });
+                        return new Response(decompressedResponseArray);
                     })();
                 }
             }
