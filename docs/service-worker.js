@@ -1,4 +1,4 @@
-self.importScripts('./decode.min.js');
+// self.importScripts('./decode.min.js');
 self.importScripts("_content/JSWrapper/js/OnFetchHandler.js");
 self.importScripts('./service-worker-assets.js');
 self.addEventListener('install', event => event.waitUntil(onInstall(event)));
@@ -13,17 +13,17 @@ const offlineAssetsExclude = [/^service-worker\.js$/];
 
 async function onInstall(event) {
     console.info('Service worker: Install');
-
+    event.waitUntil(self.skipWaiting());
     const assetsRequests = self.assetsManifest.assets
         .filter(asset => offlineAssetsInclude.some(pattern => pattern.test(asset.url)))
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
-        .map(asset => new Request(asset.url + ".br")); // 繝上ャ繧ｷ繝･辣ｧ蜷医ｒ辟｡蜉ｹ蛹悶∽ｻ｣譖ｿ謇区ｳ輔�ｮ讀懆ｨ主ｿ�隕√°?
+        .map(asset => new Request(asset.url + ".br")); // ハッシュ照合を無効化、代替手法の検討必要か?
     await caches.open(cacheName).then(cache => cache.addAll(assetsRequests));
 }
 
 async function onActivate(event) {
     console.info('Service worker: Activate');
-
+    event.waitUntil(self.clients.claim());
     const cacheKeys = await caches.keys();
     await Promise.all(cacheKeys
         .filter(key => key.startsWith(cacheNamePrefix) && key !== cacheName)
@@ -31,7 +31,6 @@ async function onActivate(event) {
 }
 
 async function onFetch(event) {
-    console.log("fetch requested:" + event.request);
     if (IsSpecial(event.request)) {
         let response = await GetSpecialResponse(event.request);
         return response;
@@ -51,4 +50,4 @@ async function onFetch(event) {
     return new Response(decompressedResponseArray,
         { headers: { 'content-type': contentType } });
 }
-/* Manifest version: Xrf+qFh4 */
+/* Manifest version: 4wWFlo6m */
