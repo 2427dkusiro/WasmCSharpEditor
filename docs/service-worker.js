@@ -17,7 +17,7 @@ async function onInstall(event) {
     const assetsRequests = self.assetsManifest.assets
         .filter(asset => offlineAssetsInclude.some(pattern => pattern.test(asset.url)))
         .filter(asset => !offlineAssetsExclude.some(pattern => pattern.test(asset.url)))
-        .map(asset => new Request(asset.url + ".br", { integrity: asset.hash }));
+        .map(asset => new Request(asset.url + ".br")); // ハッシュ照合を無効化、代替手法の検討必要か?
     await caches.open(cacheName).then(cache => cache.addAll(assetsRequests));
 }
 
