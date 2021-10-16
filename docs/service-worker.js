@@ -36,18 +36,19 @@ async function onFetch(event) {
         return response;
     }
     let cachedResponse = null;
+    const cpRequest = event.request + ".br";
     if (event.request.method === 'GET') {
         const shouldServeIndexHtml = event.request.mode === 'navigate';
         const request = (shouldServeIndexHtml ? 'index.html' : event.request) + ".br";
         const cache = await caches.open(cacheName);
-        cachedResponse = await cache.match(request);
+        const cpResponse = await cache.match(cpRequest) || await fetch(cpRequest);
+        const originalResponseBuffer = await cpResponse.arrayBuffer();
+        const originalResponseArray = new Int8Array(originalResponseBuffer);
+        const decompressedResponseArray = BrotliDecode(originalResponseArray);
+        const contentType = event.request.headers.get("content-type");
+        cachedResponse = Response(decompressedResponseArray,
+            { headers: { 'content-type': contentType } });
     }
-    const response = cachedResponse || await fetch(event.request);
-    const originalResponseBuffer = await response.arrayBuffer();
-    const originalResponseArray = new Int8Array(originalResponseBuffer);
-    const decompressedResponseArray = BrotliDecode(originalResponseArray);
-    const contentType = event.request.headers.get("content-type");
-    return new Response(decompressedResponseArray,
-        { headers: { 'content-type': contentType } });
+    return cachedResponse || await fetch(event.request);
 }
 /* Manifest version: 4wWFlo6m */
