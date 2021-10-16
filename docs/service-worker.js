@@ -44,27 +44,51 @@ async function onFetch(event) {
     let cachedResponse = null;
     if (event.request.method === 'GET') {
         const shouldServeIndexHtml = event.request.mode === 'navigate';
-        let requestUrl = (shouldServeIndexHtml ? 'index.html' : event.request.url);
+        const requestUrl = (shouldServeIndexHtml ? 'index.html' : event.request.url);
+        let reWritedUrl = requestUrl;
 
         let decodeRequired = false;
         // à≥èkçœÇ›ÇóvãÅÇµÇƒÇ¢Ç»ÇØÇÍÇŒÅAà≥èkÇ÷èëÇ´ä∑Ç¶
         if (!requestUrl.endsWith(".br")) {
             decodeRequired = true;
-            requestUrl = requestUrl + ".br";
+            reWritedUrl = requestUrl + ".br";
         }
-        const request = new Request(requestUrl, { method: "GET" });
+        const request = new Request(reWritedUrl, { method: "GET" });
         const cache = await caches.open(cacheName);
         let response = await cache.match(request) || await fetch(request);
         if (decodeRequired) {
             const originalResponseBuffer = await response.arrayBuffer();
             const originalResponseArray = new Int8Array(originalResponseBuffer);
             const decompressedResponseArray = BrotliDecode(originalResponseArray);
-            const contentType = event.request.headers.get("content-type");
-            console.log("content-type" + contentType);
+            const contentType = getMIMEType(requestUrl);
             response = new Response(decompressedResponseArray, { headers: { 'content-type': contentType } });
         }
         cachedResponse = response;
     }
     return cachedResponse || await fetch(event.request);
+}
+
+function getMIMEType(url) {
+    if (url.endsWith(".dll") || url.endsWith(".pdb")) {
+        return "application/octet-stream";
+    }
+    if (url.endsWith(".wasm")) {
+        return "application/wasm";
+    }
+    if (url.endsWith(".html")) {
+        return "text/html";
+    }
+    if (url.endsWith(".js")) {
+        return "text/javascript";
+    }
+    if (url.endsWith(".json")) {
+        return "application/json";
+    }
+    if (url.endsWith(".css")) {
+        return "text/css";
+    }
+    if (url.endsWith(".woff")) {
+        return "font/woff";
+    }
 }
 /* Manifest version: X9mkZwIM */
