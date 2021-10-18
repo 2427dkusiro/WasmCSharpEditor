@@ -22,7 +22,10 @@
 </head>
 
 <body>
-    <div id="app">読み込み中です...</div>
+    <div id="app">
+        <h2>アプリケーションを読み込んでいます...</h2>
+        <img src="icon-512.png" />
+    </div>
 
     <div id="blazor-error-ui">
         ハンドルされない例外が発生しました。
@@ -32,7 +35,7 @@
     <script src="decode.min.js"></script>
     <script src="_framework/blazor.webassembly.js" autostart="false"></script>
 
-    <!--SWA-->
+    <!--PWA-->
     <script>navigator.serviceWorker.register('service-worker.js');</script>
 
     <!--syntax highlighter>
@@ -68,25 +71,40 @@
     <!-- End Single Page Apps for GitHub Pages -->
 
     <script type="module">
-        Blazor.start({
-            loadBootResource: function (type, name, defaultUri, integrity) {
-                if (type !== 'dotnetjs' && location.hostname !== 'localhost') {
-                    return (async function () {
-                        console.log("index::fetch" + defaultUri);
-                        const response = await fetch(defaultUri + '.br', { cache: 'no-cache' });
-                        if (!response.ok) {
-                            throw new Error(response.statusText);
+        document.addEventListener("DOMContentLoaded", function () {
+            Blazor.start({
+                loadBootResource: function (type, name, defaultUri, integrity) {
+                    if (type !== 'dotnetjs') {
+                        if (location.hostname !== 'localhost') {
+                            return (async function () {
+                                console.log("index::fetch" + defaultUri);
+                                const response = await fetch(defaultUri + '.br', { cache: 'no-cache' });
+                                if (!response.ok) {
+                                    throw new Error(response.statusText);
+                                }
+                                const originalResponseBuffer = await response.arrayBuffer();
+                                const originalResponseArray = new Int8Array(originalResponseBuffer);
+                                const decompressedResponseArray = BrotliDecode(originalResponseArray);
+                                const contentType = type ===
+                                    'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
+                                const newResponse = new Response(decompressedResponseArray,
+                                    { headers: { 'content-type': contentType } });
+                                return newResponse;
+                            })();
                         }
-                        const originalResponseBuffer = await response.arrayBuffer();
-                        const originalResponseArray = new Int8Array(originalResponseBuffer);
-                        const decompressedResponseArray = BrotliDecode(originalResponseArray);
-                        const contentType = type ===
-                            'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
-                        return new Response(decompressedResponseArray,
-                            { headers: { 'content-type': contentType } });
-                    })();
+                        else {
+                            return (async function () {
+                                console.log("index::fetch" + defaultUri);
+                                const response = await fetch(defaultUri, { cache: 'no-cache' });
+                                if (!response.ok) {
+                                    throw new Error(response.statusText);
+                                }
+                                return response;
+                            });
+                        }
+                    }
                 }
-            }
+            })
         });
     </script>
 </body>
