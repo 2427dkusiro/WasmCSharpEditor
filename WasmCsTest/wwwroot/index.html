@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>WasmCsTest</title>
+    <title>WebAssembly C#コードエディタ</title>
     <base href="/WasmCSharpEditor/" />
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
@@ -13,7 +13,6 @@
     <!--syntax highlighter
     <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/styles/default.min.css" rel="stylesheet" />
     -->
-
     <!--code editer-->
     <link href="lib/codemirror/lib/codemirror.css" rel="stylesheet" />
 
@@ -23,22 +22,25 @@
 </head>
 
 <body>
-    <div id="app">Loading...</div>
+    <div id="app">
+        <h2>アプリケーションを読み込んでいます...</h2>
+        <img src="icon-512.png" />
+    </div>
 
     <div id="blazor-error-ui">
-        An unhandled error has occurred.
-        <a href="" class="reload">Reload</a>
+        ハンドルされない例外が発生しました。
+        <a href="" class="reload">再読み込み</a>
         <a class="dismiss">🗙</a>
     </div>
-    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="decode.min.js"></script>
+    <script src="_framework/blazor.webassembly.js" autostart="false"></script>
 
-    <!--SWA-->
+    <!--PWA-->
     <script>navigator.serviceWorker.register('service-worker.js');</script>
 
     <!--syntax highlighter>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.2.0/highlight.min.js"></script>
     -->
-
     <!--code editer-->
     <script src="lib/codemirror/lib/codemirror.js"></script>
     <script src="lib/codemirror/mode/clike/clike.js"></script>
@@ -48,6 +50,13 @@
         // Single Page Apps for GitHub Pages
         // MIT License
         // https://github.com/rafgraph/spa-github-pages
+        // This script checks to see if a redirect is present in the query string,
+        // converts it back into the correct url and adds it to the
+        // browser's history using window.history.replaceState(...),
+        // which won't cause the browser to attempt to load the new url.
+        // When the single page app is loaded further down in this file,
+        // the correct url will be waiting in the browser's history for
+        // the single page app to route accordingly.
         (function (l) {
             if (l.search[1] === '/') {
                 var decoded = l.search.slice(1).split('&').map(function (s) {
@@ -58,6 +67,45 @@
                 );
             }
         }(window.location))
+    </script>
+    <!-- End Single Page Apps for GitHub Pages -->
+
+    <script type="module">
+        document.addEventListener("DOMContentLoaded", function () {
+            Blazor.start({
+                loadBootResource: function (type, name, defaultUri, integrity) {
+                    if (type !== 'dotnetjs') {
+                        if (location.hostname !== 'localhost') {
+                            return (async function () {
+                                console.log("index::fetch" + defaultUri);
+                                const response = await fetch(defaultUri + '.br', { cache: 'no-cache' });
+                                if (!response.ok) {
+                                    throw new Error(response.statusText);
+                                }
+                                const originalResponseBuffer = await response.arrayBuffer();
+                                const originalResponseArray = new Int8Array(originalResponseBuffer);
+                                const decompressedResponseArray = BrotliDecode(originalResponseArray);
+                                const contentType = type ===
+                                    'dotnetwasm' ? 'application/wasm' : 'application/octet-stream';
+                                const newResponse = new Response(decompressedResponseArray,
+                                    { headers: { 'content-type': contentType } });
+                                return newResponse;
+                            })();
+                        }
+                        else {
+                            return (async function () {
+                                console.log("index::fetch" + defaultUri);
+                                const response = await fetch(defaultUri, { cache: 'no-cache' });
+                                if (!response.ok) {
+                                    throw new Error(response.statusText);
+                                }
+                                return response;
+                            });
+                        }
+                    }
+                }
+            })
+        });
     </script>
 </body>
 </html>
