@@ -12,69 +12,81 @@
 @page "/CodeEdit"
 
 <style>
+    #primaryEditorContainer {
+        display: grid;
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr repeat(3,auto) 250px;
+        margin: 0px;
+        padding: 6px 12px;
+    }
+
     .width-matchParent {
         width: 100%
     }
+
+    .tab-active {
+        background-color: white
+    }
+
+    .header-nonselected {
+        color: GrayText
+    }
+
+    .tab-content {
+    }
+
+    .visible {
+        visibility: visible
+    }
+
+    .hidden {
+        visibility: hidden
+    }
 </style>
 
-<WasmCsTest.Components.CodeEditor @bind-UserCode="userCode" @bind-UserCode:event="OnChanged" CodeEditorContext="CodeEditorContext" />
+<div id="primaryEditorContainer">
+    <div style="grid-row:1;overflow-y:scroll;">
+        <WasmCsTest.Components.CodeEditor @bind-UserCode="userCode" @bind-UserCode:event="OnChanged" CodeEditorContext="CodeEditorContext" />
+    </div>
 
-@if (isCompiling)
-{
-    <button class="width-matchParent btn btn-secondary">コンパイル取消(未実装)</button>
-}
-else if (isRunning)
-{
-    <button class="width-matchParent btn btn-secondary">プログラム強制終了(未実装)</button>
-}
-else
-{
-    <button class="width-matchParent btn btn-primary" @onclick="OnRunButtonClicked">実行</button>
-}
-
-<hr />
-
-<WasmCsTest.Components.CompileResult CodeEditorContext="CodeEditorContext" />
-
-<hr />
-
-<WasmCsTest.Components.VirtualConsole CodeEditorContext="CodeEditorContext" />
-
-@code{
-    private string? userCode;
-    private CodeEditorContext? CodeEditorContext;
-
-    private bool isCompiling => CodeEditorContext is null ? false : CodeEditorContext.CompileState == CompileStatus.CompileWaiting || CodeEditorContext.CompileState == CompileStatus.Compiling;
-    private bool isRunning => CodeEditorContext is null ? false : CodeEditorContext.RunCodeState == RunCodeStatus.RunWaiting || CodeEditorContext.RunCodeState == RunCodeStatus.Running;
-
-    protected override void OnInitialized()
-    {
-        CodeEditorContext = new CodeEditorContext(CompileQueue);
-        CodeEditorContext.AddUpdateUiCallBack(async () =>
+    <div style="grid-row:2;">
+        @if (IsCompiling)
         {
-            StateHasChanged();
-            await Task.Yield();
-        });
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        await CompileQueue.TryInitialize(JS, Http);
-    }
-
-    private async Task OnRunButtonClicked()
-    {
-        if (CodeEditorContext is not null && userCode is not null)
-        {
-            await CodeEditorContext.Compile(userCode);
-            if(CodeEditorContext.CompileResult is null)
-            {
-                throw new InvalidOperationException();
-            }
-            if (CodeEditorContext.CompileResult.IsSuccessed)
-            {
-                await CodeEditorContext.RunCodeAsync();
-            }
+            <button class="width-matchParent btn btn-secondary">コンパイル取消(未実装)</button>
         }
-    }
-}
+        else if (IsRunning)
+        {
+            <button class="width-matchParent btn btn-secondary">プログラム強制終了(未実装)</button>
+        }
+        else
+        {
+            <button class="width-matchParent btn btn-primary" @onclick="OnRunButtonClicked">実行</button>
+        }
+    </div>
+
+    <div style="grid-row:3;">
+        <hr />
+    </div>
+
+    <div style="grid-row:4;">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <button class=@tab0.HeaderClassString @onclick="tab0.OnHeaderClick">実行結果</button>
+            </li>
+            <li class="nav-item">
+                <button class=@tab1.HeaderClassString @onclick="tab1.OnHeaderClick">コンソール</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="@tab0.ContentClassString" style="grid-column:1; grid-row:5; padding:6px;">
+        <WasmCsTest.Components.CompileResult CodeEditorContext="CodeEditorContext" />
+    </div>
+
+    <div class="@tab1.ContentClassString" style="grid-column:1; grid-row:5;">
+        <WasmCsTest.Components.VirtualConsole CodeEditorContext="CodeEditorContext" />
+    </div>
+</div>

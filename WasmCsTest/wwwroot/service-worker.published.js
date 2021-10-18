@@ -56,6 +56,9 @@ async function onFetch(event) {
         const request = new Request(reWritedUrl, { method: "GET" });
         const cache = await caches.open(cacheName);
         let response = await cache.match(request) || await fetch(request);
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
         if (decodeRequired) {
             const originalResponseBuffer = await response.arrayBuffer();
             const originalResponseArray = new Int8Array(originalResponseBuffer);

@@ -4,6 +4,67 @@
         <name>WasmCsTest</name>
     </assembly>
     <members>
+        <member name="M:WasmCsTest.Pages.CodeEdit.#ctor">
+            <summary>
+            <see cref="T:WasmCsTest.Pages.CodeEdit"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+        </member>
+        <member name="M:WasmCsTest.Pages.CodeEdit.OnInitialized">
+            <inheritdoc />
+        </member>
+        <member name="M:WasmCsTest.Pages.CodeEdit.OnAfterRenderAsync(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="T:WasmCsTest.Pages.TabImplementHelper">
+            <summary>
+            razorでのタブの実装を簡略化します。
+            </summary>
+        </member>
+        <member name="M:WasmCsTest.Pages.TabImplementHelper.#ctor(WasmCsTest.Pages.Ref{System.Int32},System.Int32)">
+            <summary>
+            <see cref="T:WasmCsTest.Pages.TabImplementHelper"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="selectedIndex">選択されているタブを保持する参照。</param>
+            <param name="targetIndex">実装するタブのインデックス。</param>
+        </member>
+        <member name="P:WasmCsTest.Pages.TabImplementHelper.HeaderClassString">
+            <summary>
+            タブのヘッダーのclass属性の値を取得します。
+            </summary>
+        </member>
+        <member name="P:WasmCsTest.Pages.TabImplementHelper.ContentClassString">
+            <summary>
+            タブのコンテンツ領域のclass属性の値を取得します。
+            </summary>
+        </member>
+        <member name="M:WasmCsTest.Pages.TabImplementHelper.OnHeaderClick">
+            <summary>
+            タブのヘッダーがクリックされたときの処理を実行します。
+            </summary>
+        </member>
+        <member name="T:WasmCsTest.Pages.Ref`1">
+            <summary>
+            擬似的な値型への参照を提供します。
+            </summary>
+            <typeparam name="T">対象の型。</typeparam>
+        </member>
+        <member name="M:WasmCsTest.Pages.Ref`1.#ctor(`0)">
+            <summary>
+            <see cref="T:WasmCsTest.Pages.Ref`1"/> クラスの新しいインスタンスを初期化します。
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="P:WasmCsTest.Pages.Ref`1.Value">
+            <summary>
+            この参照が示す値を取得または設定します。 
+            </summary>
+        </member>
+        <member name="M:WasmCsTest.Pages.Ref`1.op_Implicit(WasmCsTest.Pages.Ref{`0})~`0">
+            <summary>
+            この参照が示す値を取得します。<see cref="P:WasmCsTest.Pages.Ref`1.Value"/> プロパティを読み出すことと同じです。
+            </summary>
+            <param name="value"></param>
+        </member>
         <member name="T:WasmCsTest.Program">
             <summary>
             Webアプリケーションのエントリポイントが格納されたクラスです。
