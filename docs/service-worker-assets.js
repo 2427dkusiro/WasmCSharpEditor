@@ -81,7 +81,7 @@
       "url": "index.html"
     },
     {
-      "hash": "sha256-EwiTwanb3SuespbJ5zdp37ajfoDFjBqhtnEOshJx0Hc=",
+      "hash": "sha256-KaKPbocJUlt2JYuLw2TWVeyfe0URUBw\/RfJ8IhbRMAI=",
       "url": "js\/CodeEditorHandler.js"
     },
     {
@@ -117,7 +117,7 @@
       "url": "res\/DLLIndex.json"
     },
     {
-      "hash": "sha256-22kZTK38TKKp\/OLhoduG6O1Ru+zS+TfmxJVvy7pCr4E=",
+      "hash": "sha256-RW6kytEtJT9N16OuVdDdkfmKpue95IbQemyQko\/CfX4=",
       "url": "_framework\/WasmCsTest.dll"
     },
     {
@@ -937,7 +937,7 @@
       "url": "_framework\/dotnet.5.0.11.js"
     },
     {
-      "hash": "sha256-uuQHrl64kU3e640z2cS686QOmnnqQnn7dgzK1X3lJOA=",
+      "hash": "sha256-z+j\/wDECw34qyDHcEllmZzmbZv8Weg+szB4C6GsXnAA=",
       "url": "_framework\/CodeRunner.dll"
     },
     {
@@ -1085,7 +1085,7 @@
       "url": "_framework\/zh-Hant\/Microsoft.CodeAnalysis.CSharp.resources.dll"
     },
     {
-      "hash": "sha256-WudieiyL02yrDRzSe\/Plm0nOcW2LAEbNr1B5JQxRq7o=",
+      "hash": "sha256-cSKhcviPHwVaixpgwtHuYKTk4A6awjHiCIIOgxMw2Ro=",
       "url": "_framework\/blazor.boot.json"
     },
     {
@@ -1093,5 +1093,5 @@
       "url": "_framework\/blazor.webassembly.js"
     }
   ],
-  "version": "TepX8eN0"
+  "version": "gMPmOgdY"
 };
