@@ -4,6 +4,11 @@
         <name>WasmCsTest</name>
     </assembly>
     <members>
+        <member name="T:WasmCsTest.Pages.CodeEdit">
+            <summary>
+            コードエディタページのロジック。
+            </summary>
+        </member>
         <member name="M:WasmCsTest.Pages.CodeEdit.#ctor">
             <summary>
             <see cref="T:WasmCsTest.Pages.CodeEdit"/> クラスの新しいインスタンスを初期化します。
@@ -183,11 +188,12 @@
             <param name="jSRuntime"></param>
             <returns></returns>
         </member>
-        <member name="M:WasmCsTest.UiLogics.CodeMirrorWrapper.SetToTextArea(System.String)">
+        <member name="M:WasmCsTest.UiLogics.CodeMirrorWrapper.SetToTextArea(System.String,WasmCsTest.UiLogics.CodeMirrorOption)">
             <summary>
             HTMLのtextArea要素にコードエディタをアタッチします。
             </summary>
             <param name="textAreaId">テキストエディタに設定したID属性の値。</param>
+            <param name="codeMirrorOption">構成オプション。デフォルト設定を使用する場合は、<c>null</c> にできます。</param>
             <returns></returns>
         </member>
         <member name="M:WasmCsTest.UiLogics.CodeMirrorWrapper.GetCodeText">
@@ -195,6 +201,21 @@
             現在のコードエディタのテキストを取得します。
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:WasmCsTest.UiLogics.CodeMirrorOption">
+            <summary>
+            CodeMirror の構成オプションを表現します。
+            </summary>
+        </member>
+        <member name="P:WasmCsTest.UiLogics.CodeMirrorOption.Value">
+            <summary>
+            初期状態でのコードを取得または設定します。
+            </summary>
+        </member>
+        <member name="P:WasmCsTest.UiLogics.CodeMirrorOption.IndentUnit">
+            <summary>
+            インデントのスペース数を取得または設定します。
+            </summary>
         </member>
         <member name="T:WasmCsTest.WorkerConnection.CompileJob">
             <summary>

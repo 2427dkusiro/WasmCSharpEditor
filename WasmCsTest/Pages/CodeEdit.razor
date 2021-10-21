@@ -18,7 +18,7 @@
         height: 100vh;
         max-height: 100vh;
         grid-template-columns: 1fr;
-        grid-template-rows: 1fr repeat(3,auto) 250px;
+        grid-template-rows: 1fr repeat(3,auto) 20vh;
         margin: 0px;
         padding: 6px 12px;
     }
@@ -55,11 +55,11 @@
     <div style="grid-row:2;">
         @if (IsCompiling)
         {
-            <button class="width-matchParent btn btn-secondary">コンパイル取消(未実装)</button>
+            <button class="width-matchParent btn btn-outline-primary">コンパイル取消(未実装)</button>
         }
         else if (IsRunning)
         {
-            <button class="width-matchParent btn btn-secondary">プログラム強制終了(未実装)</button>
+            <button class="width-matchParent btn btn-outline-primary">プログラム強制終了(未実装)</button>
         }
         else
         {
