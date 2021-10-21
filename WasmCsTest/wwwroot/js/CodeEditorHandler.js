@@ -11,11 +11,13 @@ export function EnableEventRaising(guid) {
     eventGuid = guid;
 }
 
-// id:String textAreaのid属性の値。
-export function InitializeCodeEditor(id) {
+export function InitializeCodeEditor(id, option) {
+    console.log(option);
+    document.getElementById(id).value = option.value;
     editer = CodeMirror.fromTextArea(document.getElementById(id), {
+        indentUnit: option.indentUnit,
         mode: "text/x-csharp",
-        lineNumbers: true,
+        lineNumbers: true
     });
     editer.on("change", OnChange)
     textAreaId = id;

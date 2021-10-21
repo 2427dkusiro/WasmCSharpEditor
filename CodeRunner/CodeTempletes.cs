@@ -14,7 +14,7 @@ namespace CodeRunner
         /// <summary>
         /// 現在時刻を表示するサンプルコードを取得します。
         /// </summary>
-        public static readonly string GetNowTimeSampleCode =
+        public static string GetNowTimeSampleCode =>
 @"using System;
 class Program
 {
@@ -27,20 +27,20 @@ class Program
         /// <summary>
         /// 空のMain関数を含むサンプルコードを取得します。
         /// </summary>
-        public static readonly string TempleteCode =
+        public static string TempleteCode =>
 @"using System;
 class Program
 {
     static void Main()
     {
-        // Write your Code here
+        // Write your code here
     }
 }";
 
         /// <summary>
         /// コンパイラとC#言語のバージョンを取得するコードを取得します。
         /// </summary>
-        public static readonly string GetVersionCode =
+        public static string GetVersionCode =>
 @"using System;
 class Program
 {

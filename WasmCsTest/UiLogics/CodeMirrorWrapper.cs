@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using WasmCsTest.WorkerConnection;
@@ -65,14 +66,15 @@ namespace WasmCsTest.UiLogics
         /// HTMLのtextArea要素にコードエディタをアタッチします。
         /// </summary>
         /// <param name="textAreaId">テキストエディタに設定したID属性の値。</param>
+        /// <param name="codeMirrorOption">構成オプション。デフォルト設定を使用する場合は、<c>null</c> にできます。</param>
         /// <returns></returns>
-        public async Task SetToTextArea(string textAreaId)
+        public async Task SetToTextArea(string textAreaId, CodeMirrorOption? codeMirrorOption = null)
         {
             if (module is null)
             {
                 throw new InvalidOperationException("モジュールがインポートされていません。");
             }
-            await module.InvokeVoidAsync("InitializeCodeEditor", textAreaId);
+            await module.InvokeVoidAsync("InitializeCodeEditor", textAreaId, codeMirrorOption ?? new CodeMirrorOption());
         }
 
         /// <summary>
@@ -85,7 +87,23 @@ namespace WasmCsTest.UiLogics
             {
                 throw new InvalidOperationException("モジュールがインポートされていません。");
             }
-            return await module.InvokeAsync<string>("Save", Array.Empty<object>());
+            return await module.InvokeAsync<string>("Save");
         }
+    }
+
+    /// <summary>
+    /// CodeMirror の構成オプションを表現します。
+    /// </summary>
+    public class CodeMirrorOption
+    {
+        /// <summary>
+        /// 初期状態でのコードを取得または設定します。
+        /// </summary>
+        public string? Value { get; set; }
+
+        /// <summary>
+        /// インデントのスペース数を取得または設定します。
+        /// </summary>
+        public int IndentUnit { get; set; } = 2;
     }
 }

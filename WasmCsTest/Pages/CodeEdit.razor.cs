@@ -8,6 +8,9 @@ using WasmCsTest.WorkerConnection;
 
 namespace WasmCsTest.Pages
 {
+    /// <summary>
+    /// コードエディタページのロジック。
+    /// </summary>
     public partial class CodeEdit
     {
         /// <summary>
@@ -58,7 +61,13 @@ namespace WasmCsTest.Pages
                 }
                 if (CodeEditorContext.CompileResult.IsSuccessed)
                 {
+                    this.selectedTab.Value = 1;
+                    await Task.Yield();
                     await CodeEditorContext.RunCodeAsync();
+                }
+                else
+                {
+                    this.selectedTab.Value = 0;
                 }
             }
         }

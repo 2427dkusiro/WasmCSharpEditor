@@ -185,17 +185,17 @@
             C#コードのテンプレートを提供します。
             </summary>
         </member>
-        <member name="F:CodeRunner.CodeTempletes.GetNowTimeSampleCode">
+        <member name="P:CodeRunner.CodeTempletes.GetNowTimeSampleCode">
             <summary>
             現在時刻を表示するサンプルコードを取得します。
             </summary>
         </member>
-        <member name="F:CodeRunner.CodeTempletes.TempleteCode">
+        <member name="P:CodeRunner.CodeTempletes.TempleteCode">
             <summary>
             空のMain関数を含むサンプルコードを取得します。
             </summary>
         </member>
-        <member name="F:CodeRunner.CodeTempletes.GetVersionCode">
+        <member name="P:CodeRunner.CodeTempletes.GetVersionCode">
             <summary>
             コンパイラとC#言語のバージョンを取得するコードを取得します。
             </summary>

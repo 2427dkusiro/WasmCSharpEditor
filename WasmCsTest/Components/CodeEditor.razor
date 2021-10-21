@@ -27,7 +27,7 @@
     <h4 style="grid-row:1;">コードエディタ</h4>
 
     <div style="grid-row:2;">
-        <textarea @bind="UserCode" id="CodeEditor"></textarea>
+        <textarea id="CodeEditor"></textarea>
     </div>
 
     <div style="grid-row:3">
@@ -64,10 +64,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        UserCode = CodeTempletes.TempleteCode;
-
         codeMirrorWrapper = await CodeMirrorWrapper.CreateInstanceAsync(JS);
-        await codeMirrorWrapper.SetToTextArea("CodeEditor");
+        await codeMirrorWrapper.SetToTextArea("CodeEditor", new CodeMirrorOption()
+        {
+            Value = CodeTempletes.TempleteCode,
+            IndentUnit = 4,
+        });
         codeMirrorWrapper.OnChange += OnUserCodeChanged;
         await OnUserCodeChanged();
     }
@@ -88,9 +90,7 @@
         }
         changedEventRisedCount++;
 
-        //JSからイベントが発生した場合自動更新されない
         this.StateHasChanged();
-
         await OnChanged.InvokeAsync(UserCode);
     }
 
