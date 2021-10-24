@@ -7,7 +7,7 @@
   "linkerEnabled": false,
   "resources": {
     "assembly": {
-      "WasmCsTest.dll": "sha256-22kZTK38TKKp\/OLhoduG6O1Ru+zS+TfmxJVvy7pCr4E=",
+      "WasmCsTest.dll": "sha256-RW6kytEtJT9N16OuVdDdkfmKpue95IbQemyQko\/CfX4=",
       "Microsoft.CSharp.dll": "sha256-J3xEnfK9Stuxsk3ysfAkwm7tlSZzs8rytHhodu+3aA0=",
       "Microsoft.VisualBasic.Core.dll": "sha256-6gJT+FVMmaF5o4CyPAnHcWjWVtFMSdJke\/+1seKS1Y0=",
       "Microsoft.VisualBasic.dll": "sha256-BCLkgDB15ehV\/3J8Qz1SJ2d4wMMH1Avc\/MlGr7G45I8=",
@@ -205,7 +205,7 @@
       "BlazorWorker.Core.dll": "sha256-txHofR04834IbpH\/lif4F1M\/tMondmiTYrihzmOe9uA=",
       "BlazorWorker.WorkerCore.dll": "sha256-tPGeue6mKLlO27LO5HJfFLl8Mx0ANUyfOEtyv4tHoRY=",
       "BlazorWorker.Extensions.JSRuntime.dll": "sha256-g6CbEOiq+Um79xjV37kHS8kChZ5TsRU3gu46K4cm7x4=",
-      "CodeRunner.dll": "sha256-uuQHrl64kU3e640z2cS686QOmnnqQnn7dgzK1X3lJOA=",
+      "CodeRunner.dll": "sha256-z+j\/wDECw34qyDHcEllmZzmbZv8Weg+szB4C6GsXnAA=",
       "JSWrapper.dll": "sha256-uidmtzyehnrczdFUdyZu9mdAVDMj4kbhV9AV4sbvn+E="
     },
     "lazyAssembly": null,
