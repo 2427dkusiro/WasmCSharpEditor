@@ -1,16 +1,14 @@
 ﻿import Dexie from "./../lib/dexie/dexie.js";
 
+/**
+ * @constant データベース名。
+ * */
 const dbName = "wasmCsEdit";
 
-let temp;
-export function BeginRead(db, _key) {
-    db.vardata.get(_key).then(result => temp = _EncodeBase64(result.data));
-}
-
-export function EndRead() {
-    return temp;
-}
-
+/**
+ * データベースを開き、その参照を取得します。
+ * @returns {Dexie}
+ * */
 export function Open() {
     const db = new Dexie(dbName);
     db.version(1).stores({
@@ -19,6 +17,13 @@ export function Open() {
     return db;
 }
 
+/**
+ * データベースに新しいデータを作成します。
+ * @param {Dexie} db 対象のデータベース。
+ * @param {string} _key 追加するデータのキー。
+ * @param {string} _type 追加するデータ。
+ * @param {string} __data Base64エンコードされたデータ。
+ */
 export function Create(db, _key, _type, __data) {
     const _data = _DecodeBase64(__data);
     db.vardata.add({
@@ -28,10 +33,23 @@ export function Create(db, _key, _type, __data) {
     });
 }
 
+/**
+ * データベースからデータを取得します。
+ * @param {Dexie} db 対象のデータベース。
+ * @param {string} _key 読み取るデータのキー。
+ * @returns {string} Base64エンコードされたデータ。
+ */
 export function Read(db, _key) {
     return db.vardata.get(_key).then(result => _EncodeBase64(result.data));
 }
 
+/**
+ * データベースのデータを更新します。
+ * @param {Dexie} db 対象のデータベース。
+ * @param {string} _key 更新するデータのキー。
+ * @param {string} _type 更新するデータ。
+ * @param {string} __data Base64エンコードされたデータ。
+ */
 export function Update(db, _key, _type, __data) {
     const _data = _DecodeBase64(__data);
     db.vardata.update(_key, {
@@ -40,10 +58,22 @@ export function Update(db, _key, _type, __data) {
     })
 }
 
+/**
+ * データベースのデータを削除します。
+ * @param {Dexie} db 対象のデータベース。
+ * @param {string} _key 削除するデータのキー。
+ */
 export function Delete(db, _key) {
     db.vardata.delete(_key);
 }
 
+/**
+ * データベースにデータを追加または更新します。
+ * @param {Dexie} db 対象のデータベース。
+ * @param {string} _key 追加または更新するデータのキー。
+ * @param {string} _type 追加または更新するデータの型。
+ * @param {string} __data Base64エンコードされたデータ。
+ */
 export function Put(db, _key, _type, __data) {
     const _data = _DecodeBase64(__data);
     db.vardata.put({
@@ -53,6 +83,11 @@ export function Put(db, _key, _type, __data) {
     });
 }
 
+/**
+ * Base64エンコードされた文字列をデコードします。
+ * @param {string} base64 Base64エンコードされた文字列。
+ * @returns {Uint8Array} デコードした結果。
+ */
 function _DecodeBase64(base64) {
     let binary = atob(base64);
     let len = binary.length;
@@ -63,6 +98,10 @@ function _DecodeBase64(base64) {
     return bytes;
 }
 
+/**
+ * Base64文字列にエンコードします。
+ * @param {any} array
+ */
 function _EncodeBase64(array) {
     return btoa(String.fromCharCode.apply(null, array));
 }
