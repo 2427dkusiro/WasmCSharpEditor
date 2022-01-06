@@ -1,0 +1,93 @@
+﻿@using System;
+@using System.Collections.Generic;
+@using System.Linq;
+
+@using UILogics;
+@using WorkerConnections;
+
+@inject HttpClient Http;
+@inject IJSRuntime JS;
+@inject BlazorTask.WorkerService workerService;
+@inject CompileQueueService CompileQueue;
+
+@page "/CodeEdit"
+
+<style>
+    #primaryEditorContainer {
+        display: grid;
+        width: 100%;
+        height: 100vh;
+        max-height: 100vh;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr repeat(3,auto) 20vh;
+        margin: 0px;
+        padding: 6px 12px;
+    }
+
+    .width-matchParent {
+        width: 100%
+    }
+
+    .tab-active {
+        background-color: white
+    }
+
+    .header-nonselected {
+        color: GrayText
+    }
+
+    .tab-content {
+    }
+
+    .visible {
+        visibility: visible
+    }
+
+    .hidden {
+        visibility: hidden
+    }
+</style>
+
+<div id="primaryEditorContainer">
+    <div style="grid-row:1;overflow-y:scroll;">
+        <WasmCSharpEditor.Components.CodeEditor @bind-UserCode="userCode" @bind-UserCode:event="OnChanged" CodeEditorContext="CodeEditorContext" />
+    </div>
+
+    <div style="grid-row:2;">
+        @if (IsCompiling)
+        {
+            <button class="width-matchParent btn btn-outline-primary">コンパイル取消(未実装)</button>
+        }
+        else if (IsRunning)
+        {
+            <button class="width-matchParent btn btn-outline-primary">プログラム強制終了(未実装)</button>
+        }
+        else
+        {
+            <button class="width-matchParent btn btn-primary" @onclick="OnRunButtonClicked">実行</button>
+        }
+    </div>
+
+    <div style="grid-row:3;">
+        <hr />
+    </div>
+
+    <div style="grid-row:4;">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <button class=@tab0.HeaderClassString @onclick="tab0.OnHeaderClick">実行結果</button>
+            </li>
+            <li class="nav-item">
+                <button class=@tab1.HeaderClassString @onclick="tab1.OnHeaderClick">コンソール</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="@tab0.ContentClassString" style="grid-column:1; grid-row:5; padding:6px;">
+        <WasmCSharpEditor.Components.CompileResult CodeEditorContext="CodeEditorContext" />
+    </div>
+
+    <div class="@tab1.ContentClassString" style="grid-column:1; grid-row:5;">
+        <WasmCSharpEditor.Components.VirtualConsole CodeEditorContext="CodeEditorContext" />
+    </div>
+</div>

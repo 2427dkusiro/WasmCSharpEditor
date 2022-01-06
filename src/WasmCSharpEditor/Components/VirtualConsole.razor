@@ -1,0 +1,118 @@
+﻿@using UILogics;
+@using WorkerConnections;
+
+@inject IJSRuntime jsRuntime;
+
+<style>
+    #virtualConsole {
+        width: 100%;
+        height: 100%;
+        padding: 2px 6px;
+        margin: 0px;
+        resize: none;
+        background-color: black;
+        color: white;
+        font-family: Consolas, Monaco, 'Courier New', Courier, monospace !important;
+    }
+</style>
+
+<!--
+@if (CodeEditorContext?.RunCodeState == RunCodeStatus.Running)
+{
+    <h4>仮想コンソール(実行中)</h4>
+}
+else
+{
+    <h4>仮想コンソール</h4>
+}
+-->
+
+<div style="height:100%;">
+    <textarea id="virtualConsole" spellcheck="false" readonly=@isReadOnly @bind="text" @oninput="OnInput" />
+</div>
+
+@code {
+    private string? text;
+
+    private bool isReadOnly = true;
+    private string IsReadOnly { get => isReadOnly ? "readonly" : ""; }
+
+    private bool isReadLine;
+
+    [Parameter]
+    public CodeEditorContext? CodeEditorContext { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        consoleInputSender = new JSWrapper.WorkerSyncConnection.ConsoleInputSender();
+        await consoleInputSender.InitializeAsync(jsRuntime);
+        text = "";
+
+        if (CodeEditorContext is not null)
+        {
+            Action<string?> writeAction = (string? str) =>
+            {
+                text += str ?? "";
+                this.StateHasChanged();
+
+            };
+            Action<string> readAction = (string guid) =>
+            {
+                preLength = text?.Length ?? 0;
+                currentReadId = guid;
+                isReadLine = false;
+                isReadOnly = false;
+                this.StateHasChanged();
+            };
+            Action<string> readLineAction = (string guid) =>
+            {
+                preLength = text?.Length ?? 0;
+                currentReadId = guid;
+                isReadLine = true;
+                isReadOnly = false;
+                this.StateHasChanged();
+            };
+            CodeEditorContext.WriteStdOut = writeAction;
+            CodeEditorContext.WriteStdError = writeAction;
+            CodeEditorContext.StdInputRead = readAction;
+            CodeEditorContext.StdInputReadLine = readLineAction;
+            CodeEditorContext.AddUpdateUiCallBack(async () =>
+            {
+                StateHasChanged();
+                await Task.Yield();
+            });
+        }
+    }
+
+    private int preLength;
+    private string? currentReadId;
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        text = e.Value as string;
+        if (text is null || currentReadId is null) { throw new InvalidOperationException(); }
+        if (isReadLine)
+        {
+            var nl = Environment.NewLine;
+            if (text.EndsWith(nl))
+            {
+                await SendInput(text[preLength..^(nl.Length)], currentReadId);
+                isReadOnly = true;
+            }
+        }
+        else
+        {
+            await SendInput(text[preLength..^0], currentReadId);
+            isReadOnly = true;
+        }
+    }
+
+    private JSWrapper.WorkerSyncConnection.ConsoleInputSender? consoleInputSender;
+    private async Task SendInput(string message, string guid)
+    {
+        if (consoleInputSender is not null)
+        {
+            await consoleInputSender.SendInput(message, guid);
+        }
+    }
+}
