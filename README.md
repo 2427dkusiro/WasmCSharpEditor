@@ -1,49 +1,62 @@
-# WebAssembly C#コードエディタ
+# WebAssembly(Wasm) CSharp Editor
 
-## 概要
-ブラウザでコード入力から実行まで完結するC#開発環境。
+## summary
 
-## 説明
-WebAssebmlyを用いて、C#コンパイラからユーザーコードまでをすべてブラウザ上で動作させます。<br>
-デスクトップアプリとしてのコードエディタと同等のエクスペリエンスを、インストールやセットアップなしに得られるようにすることを目標としています。<br>
-簡易ジャッジシステムを実装し、C#学習アプリを構築することももう1つの目標です。
+A C# development environment that allows you to edit and execute code in a browser.
 
-## 使い方
-[Github Pages](https://2427dkusiro.github.io/WasmCSharpEditor/)に開発中のビルドを公開しています。
+## details
 
-## 進捗
+By using WebAssembly, the C# compiler and user code are executed in the browser.
+The goal is to provide a development experience equivalent to that of existing development environments published as desktop applications, without the need for installation or other work.
+I also plan to create a learning course for beginners who are beginning to learn C# by implementing a judging system similar to that used in competitive programming.
 
-### 実装済み
-+ CodeMirrorによる、シンタックスハイライト付きのコードエディタの使用。
-+ ユーザーコードのコンパイルと実行。
-+ 標準出力リダイレクトによる、Console.WriteLineなどの結果のブラウザ上での表示。
-+ コンパイルと実行の、アプリ本体とは別のWorker(≒プロセス)での実行。
-+ ServiceWorker+XMLHttpRequestを利用した標準入力の同期伝達をによる、Console.ReadLineの使用。
-+ カスタムされたBlazor起動コードとservice workerにより、ほぼすべてのリソースがBrotli圧縮で転送されます(現在の総アプリケーションサイズ:約12.5MB : 10/19現在)
+## how to use
 
-### 実装予定
+### requirements
 
-#### 実装可能性　確定
-+ コンパイルやコード実行を中断できるようにします。(ワーカー立てるコストを隠蔽する方策が要るのでそれなりに重い実装。)
-+ ジャッジシステムを実装し、ユーザーコードを採点します。(同上。TREした場合のコストを隠蔽。またテストケース等のフォーマット策定もいる。結構実装重い。)
++ Latest web browser; IE is not supported; the latest version of Google chrome is recommended.
++ Service Worker enabled environment. firefox's private browsing mode will not work with Service Worker.
 
-#### 実装可能性　高
-+ ユーザーコードを保存したりエクスポートしたりできるようにします。(実装的には軽め)
-+ コードエディタページで、クエリ文字列として初期コードを指定できるようにします。
+### usage
 
-#### 実装可能性　中
-+ 自動インデントをサポートします。
-+ ユーザーコードをフォーマットします。
-+ C#文法に沿ったシンタックスハイライトを提供します。
-+ 入力候補を表示します。(ここまで言語仕様絡みの問題、Roslynをうまく利用できるか+UI実装できるか、既存コードエディタのカスタマイズできるか、というUI実装の問題もある。)
-+ コンパイル/実行のオプションへのアクセスを提供します。(実装は軽いが優先度が低い)
-+ コードエディタとコンテンツを混在させるあり方を検討し、実装します。(まずコア部分が完成しないことにはどうしようもない)
-+ コードのオンライン保存。
+You can try the latest development build at the [Github Pages](https://2427dkusiro.github.io/WasmCSharpEditor/)
+Almost all C# features are supported. The language version is C#10.
+You can use standard input/output APIs such as `Console.WriteLine` and `Console.ReadLine` as you normally do when writing console applications.
 
-#### 既知の不具合
-+ 404対策が正常に機能していない。
-+ キャッシュが重複している
-+ Console.Readの実装が違う、仕様を誤解してる
-+ ユーザーコードが大量のメモリアロケーションを行ったり、コンソールに大量の書き込みを行うとアプリケーション全体のメモリが不足する問題。(一定のところでMREで落とすほうが親切？)
-+ 無限再帰などによるstack overflowが、ユーザーコードの.NET例外ではなくランタイム側でエラーになる。仕様としか言いようがないかも。
-+ コンパイルエラーや例外のテキストが英語になる問題。日本語にできたほうが親切。
+## progress
+
+### implemented
+
++ A code editor with syntax highlighting, using the CodeMirror library.
++ Compilation and execution of user-written code.
++ Compile and execute in a separate thread using the Web workers API.
++ To display the standard output in a virtual console implemented in HTML.
++ Implementation of `Console.ReadLine` based on synchronous waiting between Workers using Service Worker and XHR.
+
+### implementing
+
+#### high priority
++ Interruption of code execution and compilation.
++ Judge system implementation.
+
+#### middle priority
+
++ Saving and exporting code.
++ Accepting the defaulted code of the code editor as the URL query string.
++ Code formatter implementation.
++ Better syntax highlighting. (Syntax highlighting based on parsing)
++ Auto-completion of code (like intellisense)
+
+#### low priority
+
++ Changing compile option.
++ Creating learning cource.
++ Store the code online.
+
+#### known bugs
++ 404 error workaround for SPA is not working.
++ The cache created by the Blazor runtime and the offline cache created by the service worker are duplicated.
++ The implementation of `Console.Read` is different from the specification. The specification is misinterpreted.
++ If the code written by the user allocates too much memory or writes too much to the console, the application will crash due to out of memory.
++ When user-written code causes stack overflow due to infinite recursive function calls, etc., the runtime crashes instead of raising a .NET exception.
++ The DLL to be loaded does not reflect the culture of the application.
