@@ -1,5 +1,6 @@
 # WebAssembly(Wasm) C#エディタ
 
+This is japanese version of readme file. / これは日本語版のreadmeです。
 Github上での表示がjavascriptのプロジェクトとなっている可能性がありますが、このプロジェクトの大半はC#コードです。
 
 ## 概要
