@@ -38,28 +38,28 @@ WebAssemblyを利用して、C#コンパイラとユーザーコードをブラ�
 
 ### 実装中
 
-#### high priority
-+ Interruption of code execution and compilation.
-+ Judge system implementation.
+#### 優先度高
++ コードのコンパイルと実行の中断。
++ ジャッジシステムの実装。
 
-#### middle priority
+#### 優先度中
 
-+ Saving and exporting code.
-+ Accepting the defaulted code of the code editor as the URL query string.
-+ Code formatter implementation.
-+ Better syntax highlighting. (Syntax highlighting based on parsing)
-+ Auto-completion of code (like intellisense)
++ コードの保存とエクスポート。
++ コードエディターのデフォルトコードをURLのクエリ文字列として受け付けること。
++ コードのフォーマット。
++ C#構文解析に基づくシンタックスハイライト。
++ コードの自動補完(intellisenseのようなもの)
 
-#### low priority
+#### 優先度低
 
-+ Changing compile option.
-+ Creating learning cource.
-+ Store the code online.
++ コンパイルオプションの変更機能。
++ C#学習コースの作成。
++ コードのオンライン保存。
 
 ### 既知の不具合
-+ 404 error workaround for SPA is not working.
-+ The cache created by the Blazor runtime and the offline cache created by the service worker are duplicated.
-+ The implementation of `Console.Read` is different from the specification. The specification is misinterpreted.
-+ If the code written by the user allocates too much memory or writes too much to the console, the application will crash due to out of memory.
-+ When user-written code causes stack overflow due to infinite recursive function calls, etc., the runtime crashes instead of raising a .NET exception.
-+ The DLL to be loaded does not reflect the culture of the application.
++ SPA用の404回避策が正常に機能しない。
++ BlazorランタイムのキャッシュとService Workerのオフラインキャッシュが重複する。
++ `Console.Read` の実装が仕様と異なる。仕様を誤って解釈しているのが原因。
++ ユーザーコードが大量のメモリ確保を行ったり、コンソールに大量の書き込みを行ったりした場合、アプリケーションがランタイムごとクラッシュする。
++ ユーザーコードが無限再起関数呼び出しなどの原因でstack overflowした場合、.NET例外が発生するのではなくランタイムがクラッシュする。
++ DLLの読み込みがカルチャを反映しない。
